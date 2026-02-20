@@ -82,16 +82,24 @@ struct HotkeyShortcut: Codable, Equatable {
 @MainActor
 @Observable
 final class HotkeyManager {
+    private enum HotkeyAction: UInt32 {
+        case recording = 1
+        case copy = 2
+    }
+
+    private static let signature = OSType(0x564F4943) // "VOIC"
+
     var onRecordingStarted: (() -> Void)?
     var onRecordingStopped: (() -> Void)?
+    var onCopyRequested: (() -> Void)?
     var currentShortcut: HotkeyShortcut
+    var currentCopyShortcut: CopyActionShortcut = .default
 
     private var isKeyDown = false
     private var isRecording = false
     private var currentMode: HotkeyMode = .toggle
     private var eventHandler: EventHandlerRef?
-    private var hotkeyRef: EventHotKeyRef?
-    private let hotkeyID = EventHotKeyID(signature: OSType(0x564F4943), id: 1) // "VOIC"
+    private var hotkeyRefs: [HotkeyAction: EventHotKeyRef] = [:]
 
     init() {
         // Load saved shortcut or use default
@@ -103,32 +111,64 @@ final class HotkeyManager {
         }
     }
 
-    /// Register hotkey handlers based on current mode.
-    func register(mode: HotkeyMode) {
+    /// Register global hotkeys for recording and copy actions.
+    func register(mode: HotkeyMode, copyShortcut: CopyActionShortcut) {
         currentMode = mode
-        unregisterHotkey()
-        registerHotkey(shortcut: currentShortcut)
+        currentCopyShortcut = copyShortcut
+        registerHotkeys()
     }
 
-    /// Update the shortcut and re-register.
+    /// Update the recording shortcut and re-register hotkeys.
     func updateShortcut(_ shortcut: HotkeyShortcut) {
         currentShortcut = shortcut
         if let data = try? JSONEncoder().encode(shortcut) {
             UserDefaults.standard.set(data, forKey: "hotkeyShortcut")
         }
-        unregisterHotkey()
-        registerHotkey(shortcut: shortcut)
+        registerHotkeys()
     }
 
-    private func registerHotkey(shortcut: HotkeyShortcut) {
+    /// Update the copy shortcut and re-register hotkeys.
+    func updateCopyShortcut(_ shortcut: CopyActionShortcut) {
+        currentCopyShortcut = shortcut
+        registerHotkeys()
+    }
+
+    private func registerHotkeys() {
+        unregisterHotkeys()
+        installEventHandlerIfNeeded()
+
+        registerHotkey(
+            keyCode: currentShortcut.keyCode,
+            modifiers: currentShortcut.modifiers,
+            action: .recording
+        )
+
+        if currentShortcut.keyCode == currentCopyShortcut.keyCode &&
+            currentShortcut.modifiers == currentCopyShortcut.modifiers {
+            NSLog("[VoiceInput] Copy hotkey conflicts with recording hotkey. Copy hotkey not registered.")
+            return
+        }
+
+        registerHotkey(
+            keyCode: currentCopyShortcut.keyCode,
+            modifiers: currentCopyShortcut.modifiers,
+            action: .copy
+        )
+    }
+
+    private func carbonModifiers(from modifiers: UInt32) -> UInt32 {
         // Convert modifier flags from Carbon to Carbon hotkey format
         var carbonModifiers: UInt32 = 0
-        if shortcut.modifiers & UInt32(cmdKey) != 0 { carbonModifiers |= UInt32(cmdKey) }
-        if shortcut.modifiers & UInt32(optionKey) != 0 { carbonModifiers |= UInt32(optionKey) }
-        if shortcut.modifiers & UInt32(controlKey) != 0 { carbonModifiers |= UInt32(controlKey) }
-        if shortcut.modifiers & UInt32(shiftKey) != 0 { carbonModifiers |= UInt32(shiftKey) }
+        if modifiers & UInt32(cmdKey) != 0 { carbonModifiers |= UInt32(cmdKey) }
+        if modifiers & UInt32(optionKey) != 0 { carbonModifiers |= UInt32(optionKey) }
+        if modifiers & UInt32(controlKey) != 0 { carbonModifiers |= UInt32(controlKey) }
+        if modifiers & UInt32(shiftKey) != 0 { carbonModifiers |= UInt32(shiftKey) }
+        return carbonModifiers
+    }
 
-        // Install event handler for hotkey pressed/released
+    private func installEventHandlerIfNeeded() {
+        guard eventHandler == nil else { return }
+
         var eventTypes = [
             EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyPressed)),
             EventTypeSpec(eventClass: OSType(kEventClassKeyboard), eventKind: UInt32(kEventHotKeyReleased)),
@@ -141,14 +181,21 @@ final class HotkeyManager {
             { (_, event, userData) -> OSStatus in
                 guard let userData, let event else { return OSStatus(eventNotHandledErr) }
                 let manager = Unmanaged<HotkeyManager>.fromOpaque(userData).takeUnretainedValue()
+                var hotkeyID = EventHotKeyID()
+                let status = GetEventParameter(
+                    event,
+                    EventParamName(kEventParamDirectObject),
+                    EventParamType(typeEventHotKeyID),
+                    nil,
+                    MemoryLayout<EventHotKeyID>.size,
+                    nil,
+                    &hotkeyID
+                )
+                guard status == noErr else { return OSStatus(eventNotHandledErr) }
 
                 let eventKind = GetEventKind(event)
                 Task { @MainActor in
-                    if eventKind == UInt32(kEventHotKeyPressed) {
-                        manager.handleKeyDown()
-                    } else if eventKind == UInt32(kEventHotKeyReleased) {
-                        manager.handleKeyUp()
-                    }
+                    manager.handleHotkeyEvent(eventKind: eventKind, hotkeyID: hotkeyID.id)
                 }
                 return noErr
             },
@@ -157,30 +204,54 @@ final class HotkeyManager {
             handlerRef,
             &eventHandler
         )
+    }
 
-        // Register the hotkey
-        RegisterEventHotKey(
-            shortcut.keyCode,
-            carbonModifiers,
+    private func registerHotkey(keyCode: UInt32, modifiers: UInt32, action: HotkeyAction) {
+        var hotkeyRef: EventHotKeyRef?
+        let hotkeyID = EventHotKeyID(signature: Self.signature, id: action.rawValue)
+        let status = RegisterEventHotKey(
+            keyCode,
+            carbonModifiers(from: modifiers),
             hotkeyID,
             GetApplicationEventTarget(),
             0,
             &hotkeyRef
         )
+        guard status == noErr, let hotkeyRef else {
+            NSLog("[VoiceInput] Failed to register hotkey action=\(action.rawValue), status=\(status)")
+            return
+        }
+        hotkeyRefs[action] = hotkeyRef
     }
 
-    private func unregisterHotkey() {
-        if let ref = hotkeyRef {
+    private func unregisterHotkeys() {
+        for ref in hotkeyRefs.values {
             UnregisterEventHotKey(ref)
-            hotkeyRef = nil
         }
+        hotkeyRefs.removeAll()
         if let handler = eventHandler {
             RemoveEventHandler(handler)
             eventHandler = nil
         }
     }
 
-    private func handleKeyDown() {
+    private func handleHotkeyEvent(eventKind: UInt32, hotkeyID: UInt32) {
+        guard let action = HotkeyAction(rawValue: hotkeyID) else { return }
+        switch action {
+        case .recording:
+            if eventKind == UInt32(kEventHotKeyPressed) {
+                handleRecordingKeyDown()
+            } else if eventKind == UInt32(kEventHotKeyReleased) {
+                handleRecordingKeyUp()
+            }
+        case .copy:
+            if eventKind == UInt32(kEventHotKeyPressed) {
+                onCopyRequested?()
+            }
+        }
+    }
+
+    private func handleRecordingKeyDown() {
         switch currentMode {
         case .toggle:
             // Toggle mode: each keyDown toggles recording
@@ -197,7 +268,7 @@ final class HotkeyManager {
         }
     }
 
-    private func handleKeyUp() {
+    private func handleRecordingKeyUp() {
         switch currentMode {
         case .toggle:
             break // Toggle handles everything on keyDown

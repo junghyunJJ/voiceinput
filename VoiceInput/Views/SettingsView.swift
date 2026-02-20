@@ -37,9 +37,25 @@ private struct GeneralTab: View {
                     Text("Recording Shortcut:")
                     Spacer()
                     ShortcutRecorderView(
-                        shortcut: viewModel.hotkeyManager.currentShortcut,
-                        onShortcutChanged: { newShortcut in
+                        displayText: viewModel.hotkeyManager.currentShortcut.displayString,
+                        onShortcutCaptured: { keyCode, modifiers in
+                            let newShortcut = HotkeyShortcut(keyCode: keyCode, modifiers: modifiers)
                             viewModel.hotkeyManager.updateShortcut(newShortcut)
+                        }
+                    )
+                }
+
+                HStack {
+                    Text("Copy Last Transcription:")
+                    Spacer()
+                    ShortcutRecorderView(
+                        displayText: viewModel.settings.copyActionShortcut.displayString,
+                        onShortcutCaptured: { keyCode, modifiers in
+                            let shortcut = CopyActionShortcut(
+                                keyCode: keyCode,
+                                modifiers: modifiers
+                            )
+                            viewModel.updateCopyActionShortcut(shortcut)
                         }
                     )
                 }
@@ -55,6 +71,10 @@ private struct GeneralTab: View {
                 .pickerStyle(.radioGroup)
 
                 Text("Default: Option+Space. May conflict with Raycast/Alfred — change if needed.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Text("Copy shortcut is global and works from any app. Default: ⌘⇧C.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -116,8 +136,8 @@ private struct GeneralTab: View {
 // MARK: - Shortcut Recorder
 
 private struct ShortcutRecorderView: View {
-    let shortcut: HotkeyShortcut
-    let onShortcutChanged: (HotkeyShortcut) -> Void
+    let displayText: String
+    let onShortcutCaptured: (_ keyCode: UInt32, _ modifiers: UInt32) -> Void
     @State private var isRecording = false
 
     var body: some View {
@@ -132,7 +152,7 @@ private struct ShortcutRecorderView: View {
                     .background(.blue.opacity(0.1))
                     .cornerRadius(6)
             } else {
-                Text(shortcut.displayString)
+                Text(displayText)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
                     .background(.secondary.opacity(0.1))
@@ -146,54 +166,55 @@ private struct ShortcutRecorderView: View {
             guard carbonModifiers != 0 else { return .ignored } // Require at least one modifier
 
             let keyCode = keyCodeFromKeyEquivalent(press.key)
-            let newShortcut = HotkeyShortcut(keyCode: keyCode, modifiers: carbonModifiers)
-            onShortcutChanged(newShortcut)
+            guard keyCode != 0 else { return .ignored }
+
+            onShortcutCaptured(keyCode, carbonModifiers)
             isRecording = false
             return .handled
         }
     }
+}
 
-    private func nsEventModifiersToCarbonModifiers(_ modifiers: SwiftUI.EventModifiers) -> UInt32 {
-        var result: UInt32 = 0
-        if modifiers.contains(SwiftUI.EventModifiers.command) { result |= UInt32(cmdKey) }
-        if modifiers.contains(SwiftUI.EventModifiers.option) { result |= UInt32(optionKey) }
-        if modifiers.contains(SwiftUI.EventModifiers.control) { result |= UInt32(controlKey) }
-        if modifiers.contains(SwiftUI.EventModifiers.shift) { result |= UInt32(shiftKey) }
-        return result
-    }
+private func nsEventModifiersToCarbonModifiers(_ modifiers: SwiftUI.EventModifiers) -> UInt32 {
+    var result: UInt32 = 0
+    if modifiers.contains(SwiftUI.EventModifiers.command) { result |= UInt32(cmdKey) }
+    if modifiers.contains(SwiftUI.EventModifiers.option) { result |= UInt32(optionKey) }
+    if modifiers.contains(SwiftUI.EventModifiers.control) { result |= UInt32(controlKey) }
+    if modifiers.contains(SwiftUI.EventModifiers.shift) { result |= UInt32(shiftKey) }
+    return result
+}
 
-    private func keyCodeFromKeyEquivalent(_ key: KeyEquivalent) -> UInt32 {
-        // Map common KeyEquivalent characters to Carbon key codes
-        switch key {
-        case .space: return UInt32(kVK_Space)
-        case .return: return UInt32(kVK_Return)
-        case .tab: return UInt32(kVK_Tab)
-        case .escape: return UInt32(kVK_Escape)
-        case .delete: return UInt32(kVK_Delete)
-        default:
-            // For letter keys, use ASCII mapping
-            let char = String(key.character).lowercased()
-            if let ascii = char.first?.asciiValue {
-                // Map a-z to Carbon key codes
-                let keyMap: [Character: Int] = [
-                    "a": kVK_ANSI_A, "s": kVK_ANSI_S, "d": kVK_ANSI_D, "f": kVK_ANSI_F,
-                    "h": kVK_ANSI_H, "g": kVK_ANSI_G, "z": kVK_ANSI_Z, "x": kVK_ANSI_X,
-                    "c": kVK_ANSI_C, "v": kVK_ANSI_V, "b": kVK_ANSI_B, "q": kVK_ANSI_Q,
-                    "w": kVK_ANSI_W, "e": kVK_ANSI_E, "r": kVK_ANSI_R, "y": kVK_ANSI_Y,
-                    "t": kVK_ANSI_T, "1": kVK_ANSI_1, "2": kVK_ANSI_2, "3": kVK_ANSI_3,
-                    "4": kVK_ANSI_4, "5": kVK_ANSI_5, "6": kVK_ANSI_6, "7": kVK_ANSI_7,
-                    "8": kVK_ANSI_8, "9": kVK_ANSI_9, "0": kVK_ANSI_0,
-                    "o": kVK_ANSI_O, "u": kVK_ANSI_U, "i": kVK_ANSI_I, "p": kVK_ANSI_P,
-                    "l": kVK_ANSI_L, "j": kVK_ANSI_J, "k": kVK_ANSI_K, "n": kVK_ANSI_N,
-                    "m": kVK_ANSI_M,
-                ]
-                if let ch = char.first, let code = keyMap[ch] {
-                    return UInt32(code)
-                }
-                return UInt32(ascii)
+private func keyCodeFromKeyEquivalent(_ key: KeyEquivalent) -> UInt32 {
+    // Map common KeyEquivalent characters to Carbon key codes
+    switch key {
+    case .space: return UInt32(kVK_Space)
+    case .return: return UInt32(kVK_Return)
+    case .tab: return UInt32(kVK_Tab)
+    case .escape: return UInt32(kVK_Escape)
+    case .delete: return UInt32(kVK_Delete)
+    default:
+        // For letter keys, use ASCII mapping
+        let char = String(key.character).lowercased()
+        if let ascii = char.first?.asciiValue {
+            // Map a-z to Carbon key codes
+            let keyMap: [Character: Int] = [
+                "a": kVK_ANSI_A, "s": kVK_ANSI_S, "d": kVK_ANSI_D, "f": kVK_ANSI_F,
+                "h": kVK_ANSI_H, "g": kVK_ANSI_G, "z": kVK_ANSI_Z, "x": kVK_ANSI_X,
+                "c": kVK_ANSI_C, "v": kVK_ANSI_V, "b": kVK_ANSI_B, "q": kVK_ANSI_Q,
+                "w": kVK_ANSI_W, "e": kVK_ANSI_E, "r": kVK_ANSI_R, "y": kVK_ANSI_Y,
+                "t": kVK_ANSI_T, "1": kVK_ANSI_1, "2": kVK_ANSI_2, "3": kVK_ANSI_3,
+                "4": kVK_ANSI_4, "5": kVK_ANSI_5, "6": kVK_ANSI_6, "7": kVK_ANSI_7,
+                "8": kVK_ANSI_8, "9": kVK_ANSI_9, "0": kVK_ANSI_0,
+                "o": kVK_ANSI_O, "u": kVK_ANSI_U, "i": kVK_ANSI_I, "p": kVK_ANSI_P,
+                "l": kVK_ANSI_L, "j": kVK_ANSI_J, "k": kVK_ANSI_K, "n": kVK_ANSI_N,
+                "m": kVK_ANSI_M,
+            ]
+            if let ch = char.first, let code = keyMap[ch] {
+                return UInt32(code)
             }
-            return 0
+            return UInt32(ascii)
         }
+        return 0
     }
 }
 

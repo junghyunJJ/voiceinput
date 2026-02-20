@@ -103,7 +103,17 @@ final class AppViewModel {
             }
         }
 
-        hotkeyManager.register(mode: settings.hotkeyMode)
+        hotkeyManager.onCopyRequested = { [weak self] in
+            guard let self else { return }
+            Task { @MainActor in
+                self.copyLastTranscription()
+            }
+        }
+
+        hotkeyManager.register(
+            mode: settings.hotkeyMode,
+            copyShortcut: settings.copyActionShortcut
+        )
     }
 
     // MARK: - Recording Control
@@ -274,7 +284,18 @@ final class AppViewModel {
 
     func updateHotkeyMode(_ mode: HotkeyMode) {
         settings.hotkeyMode = mode
-        hotkeyManager.register(mode: mode)
+        hotkeyManager.register(mode: mode, copyShortcut: settings.copyActionShortcut)
+    }
+
+    func updateCopyActionShortcut(_ shortcut: CopyActionShortcut) {
+        settings.copyActionShortcut = shortcut
+        hotkeyManager.updateCopyShortcut(shortcut)
+    }
+
+    func copyLastTranscription() {
+        guard !lastTranscription.isEmpty else { return }
+        copyToClipboard(lastTranscription)
+        log("[VoiceInput] Copied last transcription to clipboard")
     }
 
     func toggleLaunchAtLogin() {
@@ -293,9 +314,13 @@ final class AppViewModel {
 
     // MARK: - Clipboard Fallback
 
-    private func copyToClipboardWithNotification(_ text: String) {
+    private func copyToClipboard(_ text: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
+    }
+
+    private func copyToClipboardWithNotification(_ text: String) {
+        copyToClipboard(text)
         log("[VoiceInput] Copied to clipboard (Cmd+V to paste)")
         if settings.playSound { NSSound.Pop?.play() }
     }

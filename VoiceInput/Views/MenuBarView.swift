@@ -53,14 +53,18 @@ struct MenuBarView: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-
-                Button("Copy Last Transcription") {
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(viewModel.lastTranscription, forType: .string)
-                }
-
-                Divider()
             }
+
+            Button("Copy Last Transcription") {
+                viewModel.copyLastTranscription()
+            }
+            .keyboardShortcut(
+                viewModel.settings.copyActionShortcut.keyEquivalent,
+                modifiers: viewModel.settings.copyActionShortcut.eventModifiers
+            )
+            .disabled(viewModel.lastTranscription.isEmpty)
+
+            Divider()
 
             // Model status & download
             if viewModel.modelManager.isDownloading {
