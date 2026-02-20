@@ -83,6 +83,8 @@ For a signed release build with notarization:
 | small | ~250 MB | Moderate | Better | General purpose (default) |
 | large-v3 | ~1.5 GB | Slower | Best | Maximum accuracy |
 
+> For the highest transcription accuracy, we recommend **large-v3**.
+
 ## Permissions
 
 VoiceInput requires two macOS permissions:
