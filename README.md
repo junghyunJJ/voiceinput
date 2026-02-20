@@ -47,8 +47,11 @@ For a signed release build with notarization:
 
 1. **Launch** — VoiceInput appears as an icon in the menu bar.
 2. **Grant permissions** — Allow Microphone and Accessibility access when prompted.
-3. **Record** — Click the menu bar icon or use the global hotkey to start recording. Speak, then stop recording — the transcribed text is automatically inserted at your cursor.
-4. **Select a model** — Open Settings from the menu bar to download and switch between models.
+3. **Download your first model** — Open **Settings > Model** and click **Download** on the model you want.
+4. **Activate model** — After download, click **Use** for that model.
+5. **Record** — Click the menu bar icon or use the global hotkey to start recording. Speak, then stop recording — the transcribed text is automatically inserted at your cursor.
+
+> Note: Internet is required only for the first model download.
 
 ### Available Models
 

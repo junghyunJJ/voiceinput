@@ -276,8 +276,18 @@ private struct ModelTab: View {
                             }
                         } else {
                             if viewModel.modelManager.isDownloading && viewModel.modelManager.downloadingModel == model.variant {
-                                ProgressView(value: viewModel.modelManager.downloadProgress)
-                                    .frame(width: 80)
+                                VStack(alignment: .trailing, spacing: 4) {
+                                    HStack(spacing: 8) {
+                                        ProgressView(value: viewModel.modelManager.downloadProgressClamped)
+                                            .frame(width: 100)
+                                        Text(viewModel.modelManager.downloadProgressPercentText)
+                                            .font(.caption.monospacedDigit())
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    Text("Downloading...")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
                             } else {
                                 Button("Download") {
                                     Task {
@@ -298,6 +308,24 @@ private struct ModelTab: View {
 // MARK: - About Tab
 
 private struct AboutTab: View {
+    private var appVersionText: String {
+        let shortVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let buildVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+
+        if let shortVersion, !shortVersion.isEmpty {
+            if let buildVersion, !buildVersion.isEmpty, buildVersion != shortVersion {
+                return "v\(shortVersion) (\(buildVersion))"
+            }
+            return "v\(shortVersion)"
+        }
+
+        if let buildVersion, !buildVersion.isEmpty {
+            return "v\(buildVersion)"
+        }
+
+        return "v0.1.0"
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "mic.badge.xmark")
@@ -307,7 +335,7 @@ private struct AboutTab: View {
             Text("Voice Input")
                 .font(.title)
 
-            Text("v1.0.0")
+            Text(appVersionText)
                 .foregroundStyle(.secondary)
 
             Text("Voice-to-text for macOS. Speak naturally and insert text anywhere.")

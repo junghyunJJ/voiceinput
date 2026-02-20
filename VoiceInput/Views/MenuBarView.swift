@@ -3,6 +3,7 @@ import SwiftUI
 
 struct MenuBarView: View {
     @Bindable var viewModel: AppViewModel
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         VStack(spacing: 0) {
@@ -68,14 +69,19 @@ struct MenuBarView: View {
 
             // Model status & download
             if viewModel.modelManager.isDownloading {
-                HStack {
-                    Text("Downloading model...")
-                        .font(.caption)
-                    ProgressView(value: viewModel.modelManager.downloadProgress)
-                        .frame(width: 60)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text("Downloading \(viewModel.modelManager.downloadingModelDisplayName)...")
+                            .font(.caption)
+                        Spacer()
+                        Text(viewModel.modelManager.downloadProgressPercentText)
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+                    ProgressView(value: viewModel.modelManager.downloadProgressClamped)
                 }
                 .padding(.horizontal, 12)
-                .padding(.vertical, 4)
+                .padding(.vertical, 6)
             } else {
                 Menu("Model: \(viewModel.settings.selectedModel)") {
                     ForEach(viewModel.modelManager.availableModels) { model in
@@ -101,9 +107,9 @@ struct MenuBarView: View {
                 }
             }
 
-            // Settings - use programmatic open as fallback for SettingsLink
+            // Settings
             Button("Settings...") {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                openSettings()
                 NSApp.activate(ignoringOtherApps: true)
             }
             .keyboardShortcut(",", modifiers: .command)

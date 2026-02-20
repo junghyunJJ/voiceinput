@@ -28,6 +28,19 @@ final class ModelManager {
         ("large-v3-turbo", "Large v3 Turbo", "~800 MB"),
     ]
 
+    var downloadProgressClamped: Double {
+        min(max(downloadProgress, 0), 1)
+    }
+
+    var downloadProgressPercentText: String {
+        "\(Int((downloadProgressClamped * 100).rounded()))%"
+    }
+
+    var downloadingModelDisplayName: String {
+        guard let downloadingModel else { return "Model" }
+        return Self.modelCatalog.first { $0.variant == downloadingModel }?.display ?? downloadingModel
+    }
+
     init() {
         refreshAvailableModels()
         NotificationCenter.default.addObserver(
