@@ -19,11 +19,11 @@ A macOS menu bar app that converts speech to text using on-device AI. Powered by
 
 ## Installation
 
-### Download
+### 1. Download (Recommended)
 
-Download the latest release from the [Releases](https://github.com/junghyunJJ/voiceinput/releases) page.
+Most users should install from the [Releases](https://github.com/junghyunJJ/voiceinput/releases) page.
 
-### Build from Source
+### 2. Build from Source
 
 ```bash
 # Clone the repository
@@ -52,6 +52,27 @@ For a signed release build with notarization:
 5. **Record** — Click the menu bar icon or use the global hotkey to start recording. Speak, then stop recording — the transcribed text is automatically inserted at your cursor.
 
 > Note: Internet is required only for the first model download.
+
+### Default Shortcuts
+
+- **Recording:** `Option + Space` (global)
+- **Copy Last Transcription:** `Command + Shift + C` (global)
+
+### Recording Modes
+
+- **Toggle** — Press once to start recording, press again to stop.
+- **Push-to-Talk** — Hold the shortcut to record, release to stop.
+
+### Change Shortcuts / Mode
+
+1. Open menu bar icon > **Settings...** > **General**
+2. In **Hotkey**, click a shortcut field and press your new key combination
+3. Choose **Toggle** or **Push-to-Talk**
+
+### Model Download Progress
+
+- While downloading, progress is shown in **Settings > Model** and also in the menu bar panel.
+- The app shows both progress bar and percentage.
 
 ### Available Models
 

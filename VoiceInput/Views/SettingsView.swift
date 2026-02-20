@@ -77,6 +77,12 @@ private struct GeneralTab: View {
                 Text("Copy shortcut is global and works from any app. Default: ⌘⇧C.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+
+                if let warning = viewModel.hotkeyManager.registrationWarning {
+                    Text(warning)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
             }
 
             Section("Language") {
@@ -139,13 +145,20 @@ private struct ShortcutRecorderView: View {
     let displayText: String
     let onShortcutCaptured: (_ keyCode: UInt32, _ modifiers: UInt32) -> Void
     @State private var isRecording = false
+    @State private var localKeyMonitor: Any?
+    @State private var globalKeyMonitor: Any?
+    @State private var captureMessage: String?
 
     var body: some View {
         Button {
-            isRecording.toggle()
+            if isRecording {
+                stopMonitoring()
+            } else {
+                startMonitoring()
+            }
         } label: {
             if isRecording {
-                Text("Press shortcut...")
+                Text(captureMessage ?? "Press shortcut... (⌘/⌥/^/⇧ + key)")
                     .foregroundStyle(.blue)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -160,62 +173,71 @@ private struct ShortcutRecorderView: View {
             }
         }
         .buttonStyle(.plain)
-        .onKeyPress(phases: .down) { press in
-            guard isRecording else { return .ignored }
-            let carbonModifiers = nsEventModifiersToCarbonModifiers(press.modifiers)
-            guard carbonModifiers != 0 else { return .ignored } // Require at least one modifier
-
-            let keyCode = keyCodeFromKeyEquivalent(press.key)
-            guard keyCode != 0 else { return .ignored }
-
-            onShortcutCaptured(keyCode, carbonModifiers)
-            isRecording = false
-            return .handled
+        .onDisappear {
+            stopMonitoring()
         }
     }
-}
 
-private func nsEventModifiersToCarbonModifiers(_ modifiers: SwiftUI.EventModifiers) -> UInt32 {
-    var result: UInt32 = 0
-    if modifiers.contains(SwiftUI.EventModifiers.command) { result |= UInt32(cmdKey) }
-    if modifiers.contains(SwiftUI.EventModifiers.option) { result |= UInt32(optionKey) }
-    if modifiers.contains(SwiftUI.EventModifiers.control) { result |= UInt32(controlKey) }
-    if modifiers.contains(SwiftUI.EventModifiers.shift) { result |= UInt32(shiftKey) }
-    return result
-}
+    private func startMonitoring() {
+        stopMonitoring()
+        captureMessage = nil
+        isRecording = true
 
-private func keyCodeFromKeyEquivalent(_ key: KeyEquivalent) -> UInt32 {
-    // Map common KeyEquivalent characters to Carbon key codes
-    switch key {
-    case .space: return UInt32(kVK_Space)
-    case .return: return UInt32(kVK_Return)
-    case .tab: return UInt32(kVK_Tab)
-    case .escape: return UInt32(kVK_Escape)
-    case .delete: return UInt32(kVK_Delete)
-    default:
-        // For letter keys, use ASCII mapping
-        let char = String(key.character).lowercased()
-        if let ascii = char.first?.asciiValue {
-            // Map a-z to Carbon key codes
-            let keyMap: [Character: Int] = [
-                "a": kVK_ANSI_A, "s": kVK_ANSI_S, "d": kVK_ANSI_D, "f": kVK_ANSI_F,
-                "h": kVK_ANSI_H, "g": kVK_ANSI_G, "z": kVK_ANSI_Z, "x": kVK_ANSI_X,
-                "c": kVK_ANSI_C, "v": kVK_ANSI_V, "b": kVK_ANSI_B, "q": kVK_ANSI_Q,
-                "w": kVK_ANSI_W, "e": kVK_ANSI_E, "r": kVK_ANSI_R, "y": kVK_ANSI_Y,
-                "t": kVK_ANSI_T, "1": kVK_ANSI_1, "2": kVK_ANSI_2, "3": kVK_ANSI_3,
-                "4": kVK_ANSI_4, "5": kVK_ANSI_5, "6": kVK_ANSI_6, "7": kVK_ANSI_7,
-                "8": kVK_ANSI_8, "9": kVK_ANSI_9, "0": kVK_ANSI_0,
-                "o": kVK_ANSI_O, "u": kVK_ANSI_U, "i": kVK_ANSI_I, "p": kVK_ANSI_P,
-                "l": kVK_ANSI_L, "j": kVK_ANSI_J, "k": kVK_ANSI_K, "n": kVK_ANSI_N,
-                "m": kVK_ANSI_M,
-            ]
-            if let ch = char.first, let code = keyMap[ch] {
-                return UInt32(code)
+        // Ensure the app remains active while capturing a shortcut.
+        NSApp.activate(ignoringOtherApps: true)
+
+        localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            if handleShortcutEvent(event) {
+                return nil
             }
-            return UInt32(ascii)
+            return event
         }
-        return 0
+
+        // Fallback path when local monitoring misses events.
+        globalKeyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
+            DispatchQueue.main.async {
+                _ = handleShortcutEvent(event)
+            }
+        }
     }
+
+    private func stopMonitoring() {
+        if let localKeyMonitor {
+            NSEvent.removeMonitor(localKeyMonitor)
+            self.localKeyMonitor = nil
+        }
+        if let globalKeyMonitor {
+            NSEvent.removeMonitor(globalKeyMonitor)
+            self.globalKeyMonitor = nil
+        }
+        isRecording = false
+        captureMessage = nil
+    }
+
+    private func handleShortcutEvent(_ event: NSEvent) -> Bool {
+        guard isRecording else { return false }
+
+        let carbonModifiers = nsEventModifiersToCarbonModifiers(event.modifierFlags)
+        guard carbonModifiers != 0 else {
+            captureMessage = "Press shortcut... (modifier required)"
+            return false
+        }
+
+        let keyCode = UInt32(event.keyCode)
+        onShortcutCaptured(keyCode, carbonModifiers)
+        stopMonitoring()
+        return true
+    }
+}
+
+private func nsEventModifiersToCarbonModifiers(_ modifiers: NSEvent.ModifierFlags) -> UInt32 {
+    let relevant = modifiers.intersection([.command, .option, .control, .shift])
+    var result: UInt32 = 0
+    if relevant.contains(.command) { result |= UInt32(cmdKey) }
+    if relevant.contains(.option) { result |= UInt32(optionKey) }
+    if relevant.contains(.control) { result |= UInt32(controlKey) }
+    if relevant.contains(.shift) { result |= UInt32(shiftKey) }
+    return result
 }
 
 // MARK: - Model Tab

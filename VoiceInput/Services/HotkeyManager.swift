@@ -126,6 +126,7 @@ final class HotkeyManager {
     var onCopyRequested: (() -> Void)?
     var currentShortcut: HotkeyShortcut
     var currentCopyShortcut: CopyActionShortcut = .default
+    var registrationWarning: String?
 
     private var isKeyDown = false
     private var isRecording = false
@@ -168,24 +169,31 @@ final class HotkeyManager {
     private func registerHotkeys() {
         unregisterHotkeys()
         installEventHandlerIfNeeded()
+        registrationWarning = nil
 
-        registerHotkey(
+        let recordingStatus = registerHotkey(
             keyCode: currentShortcut.keyCode,
             modifiers: currentShortcut.modifiers,
             action: .recording
         )
+        if recordingStatus != noErr {
+            registrationWarning = registrationMessage(for: .recording, status: recordingStatus)
+        }
 
         if currentShortcut.keyCode == currentCopyShortcut.keyCode &&
             currentShortcut.modifiers == currentCopyShortcut.modifiers {
-            NSLog("[VoiceInput] Copy hotkey conflicts with recording hotkey. Copy hotkey not registered.")
+            appendWarning("Copy shortcut conflicts with recording shortcut. Choose a different key combination.")
             return
         }
 
-        registerHotkey(
+        let copyStatus = registerHotkey(
             keyCode: currentCopyShortcut.keyCode,
             modifiers: currentCopyShortcut.modifiers,
             action: .copy
         )
+        if copyStatus != noErr {
+            appendWarning(registrationMessage(for: .copy, status: copyStatus))
+        }
     }
 
     private func carbonModifiers(from modifiers: UInt32) -> UInt32 {
@@ -238,7 +246,7 @@ final class HotkeyManager {
         )
     }
 
-    private func registerHotkey(keyCode: UInt32, modifiers: UInt32, action: HotkeyAction) {
+    private func registerHotkey(keyCode: UInt32, modifiers: UInt32, action: HotkeyAction) -> OSStatus {
         var hotkeyRef: EventHotKeyRef?
         let hotkeyID = EventHotKeyID(signature: Self.signature, id: action.rawValue)
         let status = RegisterEventHotKey(
@@ -249,11 +257,31 @@ final class HotkeyManager {
             0,
             &hotkeyRef
         )
-        guard status == noErr, let hotkeyRef else {
+        if status == noErr, let hotkeyRef {
+            hotkeyRefs[action] = hotkeyRef
+        } else {
             NSLog("[VoiceInput] Failed to register hotkey action=\(action.rawValue), status=\(status)")
-            return
         }
-        hotkeyRefs[action] = hotkeyRef
+        return status
+    }
+
+    private func registrationMessage(for action: HotkeyAction, status: OSStatus) -> String {
+        let actionName = action == .recording ? "Recording shortcut" : "Copy shortcut"
+
+        switch status {
+        case OSStatus(eventHotKeyExistsErr):
+            return "\(actionName) is already used by another app or system shortcut."
+        default:
+            return "\(actionName) could not be registered (OSStatus \(status))."
+        }
+    }
+
+    private func appendWarning(_ message: String) {
+        if let current = registrationWarning, !current.isEmpty {
+            registrationWarning = "\(current)\n\(message)"
+        } else {
+            registrationWarning = message
+        }
     }
 
     private func unregisterHotkeys() {
