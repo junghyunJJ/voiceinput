@@ -59,6 +59,7 @@ final class AppViewModel {
     private var isModelLoaded = false
     private var overlayPanel: OverlayPanel?
     private var isProcessing = false  // Guard against duplicate hotkey triggers
+    private var consecutiveNoAudioFailures = 0
 
     // MARK: - Init
 
@@ -140,6 +141,7 @@ final class AppViewModel {
             log("[VoiceInput] Mic permission result: \(granted)")
             if !granted {
                 isProcessing = false
+                hotkeyManager.resetState()
                 setError("Microphone permission is required.")
                 return
             }
@@ -156,6 +158,7 @@ final class AppViewModel {
             } catch {
                 log("[VoiceInput] Model load error: \(error)")
                 isProcessing = false
+                hotkeyManager.resetState()
                 setError("Failed to load model: \(error.localizedDescription)")
                 return
             }
@@ -167,11 +170,12 @@ final class AppViewModel {
             try await audioService.startCapture()
             recordingState = .recording(startTime: Date())
             log("[VoiceInput] Recording started!")
-            if settings.playSound { NSSound.Tink?.play() }
+            // Do not play start sound here: output route changes can interrupt input taps.
             if settings.showOverlay { showOverlayPanel() }
         } catch {
             log("[VoiceInput] Audio capture error: \(error)")
             isProcessing = false
+            hotkeyManager.resetState()
             setError("Failed to start recording: \(error.localizedDescription)")
         }
     }
@@ -184,15 +188,18 @@ final class AppViewModel {
 
         // Stop capture and get audio samples
         log("[VoiceInput] Stopping audio capture...")
-        let audioSamples = await audioService.stopCapture()
+        let captureResult = await audioService.stopCapture()
+        let audioSamples = captureResult.samples
+        let sourceRateText = captureResult.sourceSampleRate.map { String(format: "%.1f", $0) } ?? "nil"
+        log("[VoiceInput] Capture result: reason=\(captureResult.stopReason.rawValue), tap=\(captureResult.didReceiveTap), rawBuffers=\(captureResult.rawBufferCount), frames=\(captureResult.totalFrames), sourceRate=\(sourceRateText)")
         log("[VoiceInput] Got \(audioSamples.count) samples (\(String(format: "%.1f", Double(audioSamples.count) / 16000))s)")
-        if settings.playSound { NSSound.Pop?.play() }
+        // Audio cues are disabled to avoid Bluetooth/output route churn that can drop mic capture.
 
         guard !audioSamples.isEmpty else {
-            log("[VoiceInput] No audio samples, returning to idle")
-            recordingState = .idle
+            await handleNoAudioCapture(captureResult)
             return
         }
+        consecutiveNoAudioFailures = 0
 
         // Transcribe
         recordingState = .transcribing
@@ -214,7 +221,7 @@ final class AppViewModel {
 
             guard !transcribedText.isEmpty else {
                 log("[VoiceInput] Empty transcription, returning to idle")
-                recordingState = .idle
+                finishRecordingCycle()
                 return
             }
 
@@ -240,14 +247,21 @@ final class AppViewModel {
                 log("[VoiceInput] autoInsertText is OFF, skipping insertion")
             }
 
-            recordingState = .idle
-            isProcessing = false
-            hideOverlayPanel()
+            finishRecordingCycle()
         } catch {
-            isProcessing = false
-            hideOverlayPanel()
+            finishRecordingCycle()
             setError("Transcription failed: \(error.localizedDescription)")
         }
+    }
+
+    private func handleNoAudioCapture(_ result: AudioCaptureResult) async {
+        log("[VoiceInput] No audio samples, returning to idle")
+        finishRecordingCycle()
+        consecutiveNoAudioFailures += 1
+
+        let reason = result.stopReason.rawValue
+        log("[VoiceInput] No-audio failure count: \(consecutiveNoAudioFailures), reason=\(reason)")
+        // Keep this non-blocking for UX; avoid modal error popups on intermittent capture misses.
     }
 
     // MARK: - Overlay Panel
@@ -263,6 +277,14 @@ final class AppViewModel {
     private func hideOverlayPanel() {
         overlayPanel?.close()
         overlayPanel = nil
+    }
+
+    /// Finalize one recording cycle and return UI/hotkey state to ready mode.
+    private func finishRecordingCycle() {
+        recordingState = .idle
+        isProcessing = false
+        hideOverlayPanel()
+        hotkeyManager.resetState()
     }
 
     // MARK: - Model Management
@@ -322,7 +344,6 @@ final class AppViewModel {
     private func copyToClipboardWithNotification(_ text: String) {
         copyToClipboard(text)
         log("[VoiceInput] Copied to clipboard (Cmd+V to paste)")
-        if settings.playSound { NSSound.Pop?.play() }
     }
 
     // MARK: - Error Handling
