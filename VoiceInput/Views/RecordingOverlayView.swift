@@ -38,7 +38,19 @@ struct RecordingOverlayView: View {
 
                 Spacer()
 
-                if viewModel.recordingState.isProcessing {
+                if viewModel.recordingState.isRecording {
+                    Button {
+                        Task { await viewModel.toggleRecording() }
+                    } label: {
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 14))
+                            .foregroundStyle(.white)
+                            .frame(width: 28, height: 28)
+                            .background(.red.opacity(0.8))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                } else if viewModel.recordingState.isProcessing {
                     ProgressView()
                         .controlSize(.small)
                 }
