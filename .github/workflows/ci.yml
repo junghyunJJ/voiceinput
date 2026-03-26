@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  package-checks:
+    name: Package Checks
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Swift build
+        run: swift build
+
+      - name: Swift test
+        run: swift test
+
+  ios-qa:
+    name: iOS QA
+    runs-on: macos-15
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      VOICEINPUT_IOS_BASELINE_ENV: ${{ github.workspace }}/docs/qa-baselines/ios/environment.env
+      VOICEINPUT_IOS_ARTIFACT_ROOT: ${{ github.workspace }}/.artifacts/ios-ci
+      VOICEINPUT_IOS_DERIVED_DATA: ${{ github.workspace }}/.artifacts/ios-ci/derived-data
+      VOICEINPUT_IOS_QA_CAPTURE_DIR: ${{ github.workspace }}/.artifacts/ios-ci/qa-capture
+      VOICEINPUT_IOS_CI_LOG_DIR: ${{ github.workspace }}/.artifacts/ios-ci/logs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Run iOS CI verification
+        run: ./Scripts/ci-verify-ios.sh
+
+      - name: Upload iOS QA artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-qa-artifacts
+          path: |
+            .artifacts/ios-ci
+            ~/Library/Developer/Xcode/DerivedData/**/Logs/Test/*.xcresult
+          if-no-files-found: ignore
