@@ -1,0 +1,254 @@
+name: VoiceInputMobile
+options:
+  deploymentTarget:
+    iOS: '17.0'
+settings:
+  base:
+    SWIFT_VERSION: '5.9'
+packages:
+  WhisperKit:
+    url: https://github.com/argmaxinc/WhisperKit.git
+    from: 0.15.0
+targets:
+  VoiceInputCore:
+    type: framework
+    platform: iOS
+    deploymentTarget: '17.0'
+    info:
+      path: VoiceInputCore/Resources/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: "$(DEVELOPMENT_LANGUAGE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundlePackageType: FMWK
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+    sources:
+      - path: VoiceInputCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.voiceinput.core
+        SKIP_INSTALL: YES
+
+  VoiceInputMobileShared:
+    type: framework
+    platform: iOS
+    deploymentTarget: '17.0'
+    info:
+      path: VoiceInputMobileShared/Resources/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: "$(DEVELOPMENT_LANGUAGE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundlePackageType: FMWK
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+    sources:
+      - path: VoiceInputMobileShared
+        excludes:
+          - Resources/Info.plist
+    dependencies:
+      - target: VoiceInputCore
+      - package: WhisperKit
+        product: WhisperKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.voiceinput.mobile.shared
+        SKIP_INSTALL: YES
+
+  VoiceInputKeyboard:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: '17.0'
+    info:
+      path: VoiceInputKeyboard/Resources/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: "$(DEVELOPMENT_LANGUAGE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleDisplayName: "VoiceInput Keyboard"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundlePackageType: XPC!
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        NSExtension:
+          NSExtensionAttributes:
+            IsASCIICapable: false
+            PrefersRightToLeft: false
+            PrimaryLanguage: en-US
+            RequestsOpenAccess: true
+          NSExtensionPointIdentifier: com.apple.keyboard-service
+          NSExtensionPrincipalClass: "$(PRODUCT_MODULE_NAME).KeyboardViewController"
+    entitlements:
+      path: VoiceInputKeyboard/Resources/VoiceInputKeyboard.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.jungj2.voiceinput.shared
+    sources:
+      - path: VoiceInputKeyboard
+        excludes:
+          - Resources/Info.plist
+          - Resources/VoiceInputKeyboard.entitlements
+    dependencies:
+      - target: VoiceInputCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.voiceinput.ios.keyboard
+
+  VoiceInputiOS:
+    type: application
+    platform: iOS
+    deploymentTarget: '17.0'
+    info:
+      path: VoiceInputiOS/Resources/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: "$(DEVELOPMENT_LANGUAGE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundlePackageType: APPL
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSRequiresIPhoneOS: true
+        NSMicrophoneUsageDescription: "VoiceInput needs microphone access to transcribe speech into text."
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        CFBundleURLTypes:
+          - CFBundleTypeRole: Editor
+            CFBundleURLName: com.voiceinput.ios
+            CFBundleURLSchemes:
+              - voiceinput
+        UILaunchScreen: {}
+    entitlements:
+      path: VoiceInputiOS/Resources/VoiceInputiOS.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.jungj2.voiceinput.shared
+    sources:
+      - path: VoiceInputiOS
+        excludes:
+          - Resources/Info.plist
+          - Resources/VoiceInputiOS.entitlements
+          - Views/IOSQAGalleryView.swift
+          - Views/IOSQAReadiness.swift
+    dependencies:
+      - target: VoiceInputCore
+      - target: VoiceInputMobileShared
+      - target: VoiceInputKeyboard
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.voiceinput.ios
+
+  VoiceInputiOSQA:
+    type: application
+    platform: iOS
+    deploymentTarget: '17.0'
+    info:
+      path: VoiceInputiOSQA/Resources/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: "$(DEVELOPMENT_LANGUAGE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundlePackageType: APPL
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSRequiresIPhoneOS: true
+        NSMicrophoneUsageDescription: "VoiceInput QA uses microphone access only for debug-only host state coverage."
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UILaunchScreen: {}
+    sources:
+      - path: VoiceInputiOSQA
+        excludes:
+          - Resources/Info.plist
+      - path: VoiceInputiOS
+        includes:
+          - ViewModels/IOSDictationViewModel.swift
+          - Views/IOSDictationView.swift
+          - Views/IOSQAGalleryView.swift
+          - Views/IOSQAReadiness.swift
+      - path: VoiceInputKeyboard
+        includes:
+          - KeyboardTextDocumentHelper.swift
+          - KeyboardRootView.swift
+          - ViewModels/KeyboardDictationViewModel.swift
+    dependencies:
+      - target: VoiceInputCore
+      - target: VoiceInputMobileShared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.voiceinput.ios.qa
+
+  VoiceInputMobileTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: '17.0'
+    info:
+      path: VoiceInputMobileTests/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: "$(DEVELOPMENT_LANGUAGE)"
+        CFBundleExecutable: "$(EXECUTABLE_NAME)"
+        CFBundleIdentifier: "$(PRODUCT_BUNDLE_IDENTIFIER)"
+        CFBundleInfoDictionaryVersion: "6.0"
+        CFBundleName: "$(PRODUCT_NAME)"
+        CFBundlePackageType: BNDL
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+    sources:
+      - path: VoiceInputMobileTests
+        excludes:
+          - Info.plist
+      - path: VoiceInputiOS
+        includes:
+          - ViewModels/IOSDictationViewModel.swift
+          - Views/IOSDictationView.swift
+          - Views/IOSQAGalleryView.swift
+          - Views/IOSQAReadiness.swift
+      - path: VoiceInputKeyboard
+        includes:
+          - KeyboardTextDocumentHelper.swift
+          - KeyboardViewController.swift
+          - KeyboardRootView.swift
+          - ViewModels/KeyboardDictationViewModel.swift
+    dependencies:
+      - target: VoiceInputCore
+      - target: VoiceInputiOS
+      - target: VoiceInputKeyboard
+      - target: VoiceInputMobileShared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.voiceinput.ios.tests
+
+schemes:
+  VoiceInputiOS:
+    build:
+      targets:
+        VoiceInputiOS: all
+        VoiceInputiOSQA: all
+        VoiceInputKeyboard: all
+        VoiceInputCore: all
+        VoiceInputMobileShared: all
+    test:
+      targets:
+        - name: VoiceInputMobileTests
+  VoiceInputiOSQA:
+    build:
+      targets:
+        VoiceInputiOSQA: all
+        VoiceInputCore: all
+        VoiceInputMobileShared: all
+  VoiceInputKeyboard:
+    build:
+      targets:
+        VoiceInputKeyboard: all
+        VoiceInputCore: all
+        VoiceInputMobileShared: all

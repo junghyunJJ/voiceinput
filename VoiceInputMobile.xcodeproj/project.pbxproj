@@ -1,0 +1,1244 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0046579B5943DBABC0DB0DEE /* RecordingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38D76346919FEAFD8303C90D /* RecordingMode.swift */; };
+		0490E433FD567599DA7C1EA2 /* KeyboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276E6D203876A336C43901BA /* KeyboardRootView.swift */; };
+		07FA6AE692D51F83B449DB2D /* IOSGlossarySettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64B1889E0A35524410771668 /* IOSGlossarySettingsTests.swift */; };
+		0D0D078F1BB9FDF09A2C2587 /* IOSQALaunchConfigurationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A21A51141982E5819C1AE9 /* IOSQALaunchConfigurationTests.swift */; };
+		118AA3963BC5A8F44584497D /* IOSQAGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6975C0567BDA84BDE8692A /* IOSQAGalleryView.swift */; };
+		1197EDCCAEFA0625116C437E /* IOSDictationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523248007F5E96D7C45CBAFB /* IOSDictationViewModel.swift */; };
+		11E465A2A33BA6FFB34A1F21 /* MobileWhisperKitTranscriberTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB0C49BF913F8E5449CEB1D /* MobileWhisperKitTranscriberTests.swift */; };
+		157C771DFC2B03465F2AD7DF /* WhisperKit in Frameworks */ = {isa = PBXBuildFile; productRef = 7C4749CE2462097CCA7675B7 /* WhisperKit */; };
+		19138830F65A4B4672D33A07 /* MobileAudioCaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6293F93C687D61AF5A91F977 /* MobileAudioCaptureService.swift */; };
+		1F359CCE4EB8701C398C964B /* IOSQAReadySignalTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8FC154DD3987FD811D54F6E /* IOSQAReadySignalTests.swift */; };
+		2710994655A4DC26F44B1EDB /* KeyboardDictationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07E0468154BA1A65C08890F /* KeyboardDictationViewModel.swift */; };
+		2953E44C2CC67C4363FF4181 /* VoiceInputCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */; };
+		296A6FE5DA0FCCA9BD0799CB /* KeyboardTextDocumentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E352BB7EAE43FFEDFF2A846 /* KeyboardTextDocumentHelper.swift */; };
+		2C3B8258A0A99D929D9C5CAF /* IOSQAReadiness.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD9F7C5957939352747A37 /* IOSQAReadiness.swift */; };
+		2D0312D48206F54D88BC3CCB /* KeyboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276E6D203876A336C43901BA /* KeyboardRootView.swift */; };
+		2E3CE6B452FB5FAFB1615326 /* VoiceInputMobileShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */; };
+		393BFC9B4D7C21E9FB0B7CBC /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F547ACF2D471F647F1D5F1 /* KeyboardViewController.swift */; };
+		3CD87FEFD621944673CEE3D4 /* IOSDictationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A1EF45AD081AD5CCFC0CF7 /* IOSDictationView.swift */; };
+		3E8FAD123ED22488D6C9286A /* VoiceInputCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */; };
+		43F49895F99B114485975F29 /* IOSDictationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523248007F5E96D7C45CBAFB /* IOSDictationViewModel.swift */; };
+		59E3483E76751C7D3600BAB0 /* VoiceInputCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		59E485A305FE120FB70B2C35 /* SharedSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7AB0B9E5E906A1F363F772C /* SharedSettings.swift */; };
+		5F0CC9F239C9A8BF0C5D29B0 /* VoiceInputCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */; };
+		631F0228106A568E9467FB38 /* KeyboardTextDocumentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E352BB7EAE43FFEDFF2A846 /* KeyboardTextDocumentHelper.swift */; };
+		63EEA798E70DF82E9AA76264 /* MobileConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28861DCFC3E244D73B49FB68 /* MobileConstants.swift */; };
+		6A6F8CAC874AB634513EE9DB /* DictationLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E17AE9461AFFC22A1C6180 /* DictationLanguage.swift */; };
+		71826993138A0C3B17B80E47 /* VoiceInputCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7570CB56918669E68A7A0BE4 /* RecordingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5DB94B401B9A48E8DBCFFF7 /* RecordingState.swift */; };
+		76091A0B4961CB11D25DB650 /* VoiceInputKeyboard.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F977ACF259EDC0CED305FE0D /* VoiceInputKeyboard.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7A6FD5673E4DE93880D5DB82 /* VoiceInputMobileShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */; };
+		7E4D32F3968178AC811540EC /* DictationSessionStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29DECFCB6F0F3EB0E9B507D7 /* DictationSessionStateMachine.swift */; };
+		81F92111313E8371E0AA0630 /* IOSQAReadiness.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9BD9F7C5957939352747A37 /* IOSQAReadiness.swift */; };
+		84462442C561B0FC36DFF7E1 /* PostTranscriptionProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23E733AB2700C632F82C62B7 /* PostTranscriptionProcessor.swift */; };
+		867D4953CBC53AA5599660E6 /* KeyboardDictationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07E0468154BA1A65C08890F /* KeyboardDictationViewModel.swift */; };
+		95D5A198791FB86B2DEF0B59 /* IOSDictationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A1EF45AD081AD5CCFC0CF7 /* IOSDictationView.swift */; };
+		9967DAE61AA243A62765F4B9 /* IOSDictationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A1EF45AD081AD5CCFC0CF7 /* IOSDictationView.swift */; };
+		9A830C4119FB1D498145A5CA /* VoiceInputMobileShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9BD6722915D570498811D2DC /* AppGroupSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66507DED4953F4D35C7E2F72 /* AppGroupSettingsStore.swift */; };
+		A1BA08C6C28D128EB2D1B25C /* VoiceInputCore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A7128C967F7E7657D0A34EC3 /* VoiceInputiOSQAApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAB6527611038BCDEE6D88E1 /* VoiceInputiOSQAApp.swift */; };
+		B29E1D0CA89A781EE9298E13 /* VoiceInputMobileShared.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */; };
+		B906C5E6BDC81AF80581C245 /* VoiceInputCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */; };
+		BA55BAB2FF6D820B5FD23BDE /* KeyboardDictationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F07E0468154BA1A65C08890F /* KeyboardDictationViewModel.swift */; };
+		BADCF423CBC1E985DBAB6A98 /* IOSQAGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6975C0567BDA84BDE8692A /* IOSQAGalleryView.swift */; };
+		BF1A64FDC5CE545D22CFB737 /* VoiceInputMobileShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		CAE2D7C45F80ABA7A7EBC564 /* MobileWhisperKitTranscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77996F0A14287866262FFD6 /* MobileWhisperKitTranscriber.swift */; };
+		CBA42D9BE4980D51EB7BF69F /* KeyboardHelperOnlyBoundaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 953E5A0D6C05E3775D4E904D /* KeyboardHelperOnlyBoundaryTests.swift */; };
+		CF59F2A591550A02154149D0 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F547ACF2D471F647F1D5F1 /* KeyboardViewController.swift */; };
+		D2D77712308B181146C88556 /* VoiceInputiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D43B373F7E1B2615D6E12B41 /* VoiceInputiOSApp.swift */; };
+		D5D6DC673F4C65FE77C65C14 /* KeyboardTextDocumentHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E352BB7EAE43FFEDFF2A846 /* KeyboardTextDocumentHelper.swift */; };
+		D90566A55ECE58341BB8E4C5 /* KeyboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276E6D203876A336C43901BA /* KeyboardRootView.swift */; };
+		D90F3B50F971FD23E5FDE095 /* VoiceInputMobileShared.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DBB203305A96A9CBBA052470 /* VoiceInputMobileCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCE91742296185AC0178300 /* VoiceInputMobileCoreTests.swift */; };
+		DBBF7419B307165475E0F0DF /* IOSDictationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 523248007F5E96D7C45CBAFB /* IOSDictationViewModel.swift */; };
+		DBCC213CA3A13101ED02C1E8 /* TranscriptionSanityEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7F3FC981CE8A9C745A2A1A8 /* TranscriptionSanityEvaluator.swift */; };
+		F5C71084FF0D276C248C34CD /* SharedContainerKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F9FB7A183974E39A3D3BB94 /* SharedContainerKeys.swift */; };
+		F945E9FC0FD9EAB2FE18D25D /* PostTranscriptionProcessingTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E9ED05B1D5EC13AC1A16810 /* PostTranscriptionProcessingTypes.swift */; };
+		FD4923721A91E886F72CCA0D /* TranscriptionSanityEvaluatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C49C71959CB1A54B665A751F /* TranscriptionSanityEvaluatorTests.swift */; };
+		FED6D92383FE9672C4E04146 /* VoiceInputCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		01A29B96284EB08C513F58E6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B89EFD48E9B16C717C20350;
+			remoteInfo = VoiceInputKeyboard;
+		};
+		118450291ECE744D1197C090 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 333A25634BDE9571F0D55915;
+			remoteInfo = VoiceInputCore;
+		};
+		1C004B84479AC62B4F7090AF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D01D92271FF9CAD671FD22F5;
+			remoteInfo = VoiceInputiOS;
+		};
+		3D5DD15AC29CAF9D97B20669 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5FB767933CA186082C0D324F;
+			remoteInfo = VoiceInputMobileShared;
+		};
+		59EC8201707EEE1E3C530647 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 333A25634BDE9571F0D55915;
+			remoteInfo = VoiceInputCore;
+		};
+		6774D2F1AA8BF9DCBBAF13B7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B89EFD48E9B16C717C20350;
+			remoteInfo = VoiceInputKeyboard;
+		};
+		7FE469FB92A6AE7349B1EA34 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 333A25634BDE9571F0D55915;
+			remoteInfo = VoiceInputCore;
+		};
+		84FFAFE4DCAF4C120B893FB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 333A25634BDE9571F0D55915;
+			remoteInfo = VoiceInputCore;
+		};
+		911C1686F29A89BE9D6D8060 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5FB767933CA186082C0D324F;
+			remoteInfo = VoiceInputMobileShared;
+		};
+		9F0650B275373A42FF2F32F3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 333A25634BDE9571F0D55915;
+			remoteInfo = VoiceInputCore;
+		};
+		F8FBD496958C36F772036C43 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5FB767933CA186082C0D324F;
+			remoteInfo = VoiceInputMobileShared;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		50325D0127183A4A08504E1C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				59E3483E76751C7D3600BAB0 /* VoiceInputCore.framework in Embed Frameworks */,
+				D90F3B50F971FD23E5FDE095 /* VoiceInputMobileShared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7955F568AE926C60BF4C307C /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				76091A0B4961CB11D25DB650 /* VoiceInputKeyboard.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A0602A17A193398E3E9EBD3A /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				A1BA08C6C28D128EB2D1B25C /* VoiceInputCore.framework in Embed Frameworks */,
+				BF1A64FDC5CE545D22CFB737 /* VoiceInputMobileShared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6CB2D94E60B93A74BB66684 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				71826993138A0C3B17B80E47 /* VoiceInputCore.framework in Embed Frameworks */,
+				9A830C4119FB1D498145A5CA /* VoiceInputMobileShared.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VoiceInputCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F9FB7A183974E39A3D3BB94 /* SharedContainerKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedContainerKeys.swift; sourceTree = "<group>"; };
+		23E733AB2700C632F82C62B7 /* PostTranscriptionProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTranscriptionProcessor.swift; sourceTree = "<group>"; };
+		276E6D203876A336C43901BA /* KeyboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootView.swift; sourceTree = "<group>"; };
+		28861DCFC3E244D73B49FB68 /* MobileConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileConstants.swift; sourceTree = "<group>"; };
+		29DECFCB6F0F3EB0E9B507D7 /* DictationSessionStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictationSessionStateMachine.swift; sourceTree = "<group>"; };
+		38D76346919FEAFD8303C90D /* RecordingMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingMode.swift; sourceTree = "<group>"; };
+		3C3F4CA8FE33A067FDA9D0C1 /* VoiceInputMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = VoiceInputMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		47A21A51141982E5819C1AE9 /* IOSQALaunchConfigurationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSQALaunchConfigurationTests.swift; sourceTree = "<group>"; };
+		4E352BB7EAE43FFEDFF2A846 /* KeyboardTextDocumentHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardTextDocumentHelper.swift; sourceTree = "<group>"; };
+		50EC25A9E4BA70B82A17B40A /* VoiceInputiOSQA.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = VoiceInputiOSQA.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		523248007F5E96D7C45CBAFB /* IOSDictationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSDictationViewModel.swift; sourceTree = "<group>"; };
+		555A5CD665F0A1C81F0823F3 /* VoiceInputiOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = VoiceInputiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6293F93C687D61AF5A91F977 /* MobileAudioCaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileAudioCaptureService.swift; sourceTree = "<group>"; };
+		64B1889E0A35524410771668 /* IOSGlossarySettingsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSGlossarySettingsTests.swift; sourceTree = "<group>"; };
+		66507DED4953F4D35C7E2F72 /* AppGroupSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupSettingsStore.swift; sourceTree = "<group>"; };
+		923F12087C98A48C16A5984A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		953E5A0D6C05E3775D4E904D /* KeyboardHelperOnlyBoundaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardHelperOnlyBoundaryTests.swift; sourceTree = "<group>"; };
+		9E9ED05B1D5EC13AC1A16810 /* PostTranscriptionProcessingTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostTranscriptionProcessingTypes.swift; sourceTree = "<group>"; };
+		9FB0C49BF913F8E5449CEB1D /* MobileWhisperKitTranscriberTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileWhisperKitTranscriberTests.swift; sourceTree = "<group>"; };
+		A77996F0A14287866262FFD6 /* MobileWhisperKitTranscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobileWhisperKitTranscriber.swift; sourceTree = "<group>"; };
+		A9E17AE9461AFFC22A1C6180 /* DictationLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictationLanguage.swift; sourceTree = "<group>"; };
+		AA6975C0567BDA84BDE8692A /* IOSQAGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSQAGalleryView.swift; sourceTree = "<group>"; };
+		B0F547ACF2D471F647F1D5F1 /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
+		B7AB0B9E5E906A1F363F772C /* SharedSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSettings.swift; sourceTree = "<group>"; };
+		C49C71959CB1A54B665A751F /* TranscriptionSanityEvaluatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionSanityEvaluatorTests.swift; sourceTree = "<group>"; };
+		D43B373F7E1B2615D6E12B41 /* VoiceInputiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputiOSApp.swift; sourceTree = "<group>"; };
+		D9BD9F7C5957939352747A37 /* IOSQAReadiness.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSQAReadiness.swift; sourceTree = "<group>"; };
+		E5DB94B401B9A48E8DBCFFF7 /* RecordingState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingState.swift; sourceTree = "<group>"; };
+		E6A1EF45AD081AD5CCFC0CF7 /* IOSDictationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSDictationView.swift; sourceTree = "<group>"; };
+		E7F3FC981CE8A9C745A2A1A8 /* TranscriptionSanityEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionSanityEvaluator.swift; sourceTree = "<group>"; };
+		EBCE91742296185AC0178300 /* VoiceInputMobileCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputMobileCoreTests.swift; sourceTree = "<group>"; };
+		F07E0468154BA1A65C08890F /* KeyboardDictationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardDictationViewModel.swift; sourceTree = "<group>"; };
+		F8FC154DD3987FD811D54F6E /* IOSQAReadySignalTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IOSQAReadySignalTests.swift; sourceTree = "<group>"; };
+		F977ACF259EDC0CED305FE0D /* VoiceInputKeyboard.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = VoiceInputKeyboard.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAB6527611038BCDEE6D88E1 /* VoiceInputiOSQAApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputiOSQAApp.swift; sourceTree = "<group>"; };
+		FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = VoiceInputMobileShared.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		314B27BA39243A10D2927082 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2953E44C2CC67C4363FF4181 /* VoiceInputCore.framework in Frameworks */,
+				157C771DFC2B03465F2AD7DF /* WhisperKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8EC934CCA5F42B337F833D29 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B906C5E6BDC81AF80581C245 /* VoiceInputCore.framework in Frameworks */,
+				7A6FD5673E4DE93880D5DB82 /* VoiceInputMobileShared.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BFE4579E29DF57F822BEABC9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F0CC9F239C9A8BF0C5D29B0 /* VoiceInputCore.framework in Frameworks */,
+				2E3CE6B452FB5FAFB1615326 /* VoiceInputMobileShared.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E91A093DD746D7A8F551531E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3E8FAD123ED22488D6C9286A /* VoiceInputCore.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F79732AB806E0BCF69503AE6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FED6D92383FE9672C4E04146 /* VoiceInputCore.framework in Frameworks */,
+				B29E1D0CA89A781EE9298E13 /* VoiceInputMobileShared.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0579B16220C11A9A59E3A560 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				923F12087C98A48C16A5984A /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1B0780C88AB4E7ABBE1D76D9 = {
+			isa = PBXGroup;
+			children = (
+				262F46A0F14CEA46B7447E61 /* VoiceInputCore */,
+				8423CFB441271673E3D7A30C /* VoiceInputiOS */,
+				5B548C09F2B6B47931280826 /* VoiceInputiOSQA */,
+				890B120AF40BE2C7CDE142E8 /* VoiceInputKeyboard */,
+				96B709A07C9671720528EB28 /* VoiceInputMobileShared */,
+				A4B9EDFF8FF74DA5DD9D447A /* VoiceInputMobileTests */,
+				C72164A857BD9104D43FF779 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		262F46A0F14CEA46B7447E61 /* VoiceInputCore */ = {
+			isa = PBXGroup;
+			children = (
+				BA6CE63F72CB45C17274FA62 /* Models */,
+				37372F493D93D1A94ECB0E5D /* PostProcessing */,
+				FBB3B08BB4503AF1E31A60E9 /* Quality */,
+				0579B16220C11A9A59E3A560 /* Resources */,
+				31B63E58B86FA56B0BEECE10 /* Session */,
+				93F26D23F4FB21EF1B2628E9 /* Settings */,
+			);
+			path = VoiceInputCore;
+			sourceTree = "<group>";
+		};
+		31B63E58B86FA56B0BEECE10 /* Session */ = {
+			isa = PBXGroup;
+			children = (
+				29DECFCB6F0F3EB0E9B507D7 /* DictationSessionStateMachine.swift */,
+			);
+			path = Session;
+			sourceTree = "<group>";
+		};
+		3337BD82CF0B064732C60835 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E6A1EF45AD081AD5CCFC0CF7 /* IOSDictationView.swift */,
+				AA6975C0567BDA84BDE8692A /* IOSQAGalleryView.swift */,
+				D9BD9F7C5957939352747A37 /* IOSQAReadiness.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		37372F493D93D1A94ECB0E5D /* PostProcessing */ = {
+			isa = PBXGroup;
+			children = (
+				9E9ED05B1D5EC13AC1A16810 /* PostTranscriptionProcessingTypes.swift */,
+				23E733AB2700C632F82C62B7 /* PostTranscriptionProcessor.swift */,
+			);
+			path = PostProcessing;
+			sourceTree = "<group>";
+		};
+		56C4AEECBDADB8DC6F48B67C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FAB6527611038BCDEE6D88E1 /* VoiceInputiOSQAApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		5B548C09F2B6B47931280826 /* VoiceInputiOSQA */ = {
+			isa = PBXGroup;
+			children = (
+				56C4AEECBDADB8DC6F48B67C /* App */,
+			);
+			path = VoiceInputiOSQA;
+			sourceTree = "<group>";
+		};
+		6F6E082C7DBF455C6A169154 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				523248007F5E96D7C45CBAFB /* IOSDictationViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		8423CFB441271673E3D7A30C /* VoiceInputiOS */ = {
+			isa = PBXGroup;
+			children = (
+				F81E7241EC0628A963E338E3 /* App */,
+				6F6E082C7DBF455C6A169154 /* ViewModels */,
+				3337BD82CF0B064732C60835 /* Views */,
+			);
+			path = VoiceInputiOS;
+			sourceTree = "<group>";
+		};
+		869404A0D187BBDAFBEE2E87 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F07E0468154BA1A65C08890F /* KeyboardDictationViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		890B120AF40BE2C7CDE142E8 /* VoiceInputKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				276E6D203876A336C43901BA /* KeyboardRootView.swift */,
+				4E352BB7EAE43FFEDFF2A846 /* KeyboardTextDocumentHelper.swift */,
+				B0F547ACF2D471F647F1D5F1 /* KeyboardViewController.swift */,
+				869404A0D187BBDAFBEE2E87 /* ViewModels */,
+			);
+			path = VoiceInputKeyboard;
+			sourceTree = "<group>";
+		};
+		93F26D23F4FB21EF1B2628E9 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				66507DED4953F4D35C7E2F72 /* AppGroupSettingsStore.swift */,
+				1F9FB7A183974E39A3D3BB94 /* SharedContainerKeys.swift */,
+				B7AB0B9E5E906A1F363F772C /* SharedSettings.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		96B709A07C9671720528EB28 /* VoiceInputMobileShared */ = {
+			isa = PBXGroup;
+			children = (
+				C39BED6B262572902EEFFA26 /* Services */,
+				D10EDC7D3BC4A2E5501889B9 /* Support */,
+			);
+			path = VoiceInputMobileShared;
+			sourceTree = "<group>";
+		};
+		A4B9EDFF8FF74DA5DD9D447A /* VoiceInputMobileTests */ = {
+			isa = PBXGroup;
+			children = (
+				64B1889E0A35524410771668 /* IOSGlossarySettingsTests.swift */,
+				47A21A51141982E5819C1AE9 /* IOSQALaunchConfigurationTests.swift */,
+				F8FC154DD3987FD811D54F6E /* IOSQAReadySignalTests.swift */,
+				953E5A0D6C05E3775D4E904D /* KeyboardHelperOnlyBoundaryTests.swift */,
+				9FB0C49BF913F8E5449CEB1D /* MobileWhisperKitTranscriberTests.swift */,
+				C49C71959CB1A54B665A751F /* TranscriptionSanityEvaluatorTests.swift */,
+				EBCE91742296185AC0178300 /* VoiceInputMobileCoreTests.swift */,
+			);
+			path = VoiceInputMobileTests;
+			sourceTree = "<group>";
+		};
+		BA6CE63F72CB45C17274FA62 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A9E17AE9461AFFC22A1C6180 /* DictationLanguage.swift */,
+				38D76346919FEAFD8303C90D /* RecordingMode.swift */,
+				E5DB94B401B9A48E8DBCFFF7 /* RecordingState.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		C39BED6B262572902EEFFA26 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				6293F93C687D61AF5A91F977 /* MobileAudioCaptureService.swift */,
+				A77996F0A14287866262FFD6 /* MobileWhisperKitTranscriber.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		C72164A857BD9104D43FF779 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */,
+				555A5CD665F0A1C81F0823F3 /* VoiceInputiOS.app */,
+				50EC25A9E4BA70B82A17B40A /* VoiceInputiOSQA.app */,
+				F977ACF259EDC0CED305FE0D /* VoiceInputKeyboard.appex */,
+				FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */,
+				3C3F4CA8FE33A067FDA9D0C1 /* VoiceInputMobileTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D10EDC7D3BC4A2E5501889B9 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				28861DCFC3E244D73B49FB68 /* MobileConstants.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		F81E7241EC0628A963E338E3 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				D43B373F7E1B2615D6E12B41 /* VoiceInputiOSApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		FBB3B08BB4503AF1E31A60E9 /* Quality */ = {
+			isa = PBXGroup;
+			children = (
+				E7F3FC981CE8A9C745A2A1A8 /* TranscriptionSanityEvaluator.swift */,
+			);
+			path = Quality;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		333A25634BDE9571F0D55915 /* VoiceInputCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6741E39C20B865004DC8A5D3 /* Build configuration list for PBXNativeTarget "VoiceInputCore" */;
+			buildPhases = (
+				EAE5777A690E7D9593DB7402 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VoiceInputCore;
+			packageProductDependencies = (
+			);
+			productName = VoiceInputCore;
+			productReference = 1CB31C65CF85F6C0F53A14A0 /* VoiceInputCore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		493651A40A3EB82B2AE7CD02 /* VoiceInputMobileTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5A9DEBDE29CAED420FD1D04E /* Build configuration list for PBXNativeTarget "VoiceInputMobileTests" */;
+			buildPhases = (
+				A4C9B49F2A17EBB10AB877B2 /* Sources */,
+				F79732AB806E0BCF69503AE6 /* Frameworks */,
+				A0602A17A193398E3E9EBD3A /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3881304453D75E9A05F07388 /* PBXTargetDependency */,
+				D8BF2CEC18346250929B51C9 /* PBXTargetDependency */,
+				2ADDE3942AB6CAE091355A23 /* PBXTargetDependency */,
+				5A59821263687922CD1D0CDC /* PBXTargetDependency */,
+			);
+			name = VoiceInputMobileTests;
+			packageProductDependencies = (
+			);
+			productName = VoiceInputMobileTests;
+			productReference = 3C3F4CA8FE33A067FDA9D0C1 /* VoiceInputMobileTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		5FB767933CA186082C0D324F /* VoiceInputMobileShared */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 24D58ECF66131B644B36CB5E /* Build configuration list for PBXNativeTarget "VoiceInputMobileShared" */;
+			buildPhases = (
+				32D1833B1C7326012DAE3351 /* Sources */,
+				314B27BA39243A10D2927082 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2936E92619C310A82F974C57 /* PBXTargetDependency */,
+			);
+			name = VoiceInputMobileShared;
+			packageProductDependencies = (
+				7C4749CE2462097CCA7675B7 /* WhisperKit */,
+			);
+			productName = VoiceInputMobileShared;
+			productReference = FF6712F3C6CDDDC651F7E3B1 /* VoiceInputMobileShared.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		8B89EFD48E9B16C717C20350 /* VoiceInputKeyboard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9CE3B10F31B8C236E411ED97 /* Build configuration list for PBXNativeTarget "VoiceInputKeyboard" */;
+			buildPhases = (
+				B4B4690EC65421A9E653B846 /* Sources */,
+				E91A093DD746D7A8F551531E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				254B40BB7F4883DF31A21547 /* PBXTargetDependency */,
+			);
+			name = VoiceInputKeyboard;
+			packageProductDependencies = (
+			);
+			productName = VoiceInputKeyboard;
+			productReference = F977ACF259EDC0CED305FE0D /* VoiceInputKeyboard.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		9AC20A4BA8F60FABB906DE80 /* VoiceInputiOSQA */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D719641ACA99B7BFCD615E06 /* Build configuration list for PBXNativeTarget "VoiceInputiOSQA" */;
+			buildPhases = (
+				95249DB3EA1281A0A04BD9BD /* Sources */,
+				BFE4579E29DF57F822BEABC9 /* Frameworks */,
+				50325D0127183A4A08504E1C /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				387114EC9C1BAA01CEAD33E6 /* PBXTargetDependency */,
+				007D4512419FE6CBDF287173 /* PBXTargetDependency */,
+			);
+			name = VoiceInputiOSQA;
+			packageProductDependencies = (
+			);
+			productName = VoiceInputiOSQA;
+			productReference = 50EC25A9E4BA70B82A17B40A /* VoiceInputiOSQA.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D01D92271FF9CAD671FD22F5 /* VoiceInputiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0FC2C8E6735C7E751C6E9464 /* Build configuration list for PBXNativeTarget "VoiceInputiOS" */;
+			buildPhases = (
+				AEA035F1313309AB34D844BD /* Sources */,
+				8EC934CCA5F42B337F833D29 /* Frameworks */,
+				7955F568AE926C60BF4C307C /* Embed Foundation Extensions */,
+				F6CB2D94E60B93A74BB66684 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0D4CA856E3D5020C966B9F40 /* PBXTargetDependency */,
+				B555CC6BE242AAB1B23C59C1 /* PBXTargetDependency */,
+				E79C07B45254592DB43E689D /* PBXTargetDependency */,
+			);
+			name = VoiceInputiOS;
+			packageProductDependencies = (
+			);
+			productName = VoiceInputiOS;
+			productReference = 555A5CD665F0A1C81F0823F3 /* VoiceInputiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		130AA2E8CF4F0A18666E9D00 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = A261426BD47B821C2FDE223B /* Build configuration list for PBXProject "VoiceInputMobile" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 1B0780C88AB4E7ABBE1D76D9;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				25A4FB93E728ED86EC613462 /* XCRemoteSwiftPackageReference "WhisperKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				333A25634BDE9571F0D55915 /* VoiceInputCore */,
+				8B89EFD48E9B16C717C20350 /* VoiceInputKeyboard */,
+				5FB767933CA186082C0D324F /* VoiceInputMobileShared */,
+				493651A40A3EB82B2AE7CD02 /* VoiceInputMobileTests */,
+				D01D92271FF9CAD671FD22F5 /* VoiceInputiOS */,
+				9AC20A4BA8F60FABB906DE80 /* VoiceInputiOSQA */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		32D1833B1C7326012DAE3351 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				19138830F65A4B4672D33A07 /* MobileAudioCaptureService.swift in Sources */,
+				63EEA798E70DF82E9AA76264 /* MobileConstants.swift in Sources */,
+				CAE2D7C45F80ABA7A7EBC564 /* MobileWhisperKitTranscriber.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		95249DB3EA1281A0A04BD9BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3CD87FEFD621944673CEE3D4 /* IOSDictationView.swift in Sources */,
+				1197EDCCAEFA0625116C437E /* IOSDictationViewModel.swift in Sources */,
+				118AA3963BC5A8F44584497D /* IOSQAGalleryView.swift in Sources */,
+				81F92111313E8371E0AA0630 /* IOSQAReadiness.swift in Sources */,
+				867D4953CBC53AA5599660E6 /* KeyboardDictationViewModel.swift in Sources */,
+				0490E433FD567599DA7C1EA2 /* KeyboardRootView.swift in Sources */,
+				631F0228106A568E9467FB38 /* KeyboardTextDocumentHelper.swift in Sources */,
+				A7128C967F7E7657D0A34EC3 /* VoiceInputiOSQAApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4C9B49F2A17EBB10AB877B2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				95D5A198791FB86B2DEF0B59 /* IOSDictationView.swift in Sources */,
+				DBBF7419B307165475E0F0DF /* IOSDictationViewModel.swift in Sources */,
+				07FA6AE692D51F83B449DB2D /* IOSGlossarySettingsTests.swift in Sources */,
+				BADCF423CBC1E985DBAB6A98 /* IOSQAGalleryView.swift in Sources */,
+				0D0D078F1BB9FDF09A2C2587 /* IOSQALaunchConfigurationTests.swift in Sources */,
+				2C3B8258A0A99D929D9C5CAF /* IOSQAReadiness.swift in Sources */,
+				1F359CCE4EB8701C398C964B /* IOSQAReadySignalTests.swift in Sources */,
+				BA55BAB2FF6D820B5FD23BDE /* KeyboardDictationViewModel.swift in Sources */,
+				CBA42D9BE4980D51EB7BF69F /* KeyboardHelperOnlyBoundaryTests.swift in Sources */,
+				D90566A55ECE58341BB8E4C5 /* KeyboardRootView.swift in Sources */,
+				296A6FE5DA0FCCA9BD0799CB /* KeyboardTextDocumentHelper.swift in Sources */,
+				393BFC9B4D7C21E9FB0B7CBC /* KeyboardViewController.swift in Sources */,
+				11E465A2A33BA6FFB34A1F21 /* MobileWhisperKitTranscriberTests.swift in Sources */,
+				FD4923721A91E886F72CCA0D /* TranscriptionSanityEvaluatorTests.swift in Sources */,
+				DBB203305A96A9CBBA052470 /* VoiceInputMobileCoreTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AEA035F1313309AB34D844BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9967DAE61AA243A62765F4B9 /* IOSDictationView.swift in Sources */,
+				43F49895F99B114485975F29 /* IOSDictationViewModel.swift in Sources */,
+				D2D77712308B181146C88556 /* VoiceInputiOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B4B4690EC65421A9E653B846 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2710994655A4DC26F44B1EDB /* KeyboardDictationViewModel.swift in Sources */,
+				2D0312D48206F54D88BC3CCB /* KeyboardRootView.swift in Sources */,
+				D5D6DC673F4C65FE77C65C14 /* KeyboardTextDocumentHelper.swift in Sources */,
+				CF59F2A591550A02154149D0 /* KeyboardViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EAE5777A690E7D9593DB7402 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9BD6722915D570498811D2DC /* AppGroupSettingsStore.swift in Sources */,
+				6A6F8CAC874AB634513EE9DB /* DictationLanguage.swift in Sources */,
+				7E4D32F3968178AC811540EC /* DictationSessionStateMachine.swift in Sources */,
+				F945E9FC0FD9EAB2FE18D25D /* PostTranscriptionProcessingTypes.swift in Sources */,
+				84462442C561B0FC36DFF7E1 /* PostTranscriptionProcessor.swift in Sources */,
+				0046579B5943DBABC0DB0DEE /* RecordingMode.swift in Sources */,
+				7570CB56918669E68A7A0BE4 /* RecordingState.swift in Sources */,
+				F5C71084FF0D276C248C34CD /* SharedContainerKeys.swift in Sources */,
+				59E485A305FE120FB70B2C35 /* SharedSettings.swift in Sources */,
+				DBCC213CA3A13101ED02C1E8 /* TranscriptionSanityEvaluator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		007D4512419FE6CBDF287173 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5FB767933CA186082C0D324F /* VoiceInputMobileShared */;
+			targetProxy = 3D5DD15AC29CAF9D97B20669 /* PBXContainerItemProxy */;
+		};
+		0D4CA856E3D5020C966B9F40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 333A25634BDE9571F0D55915 /* VoiceInputCore */;
+			targetProxy = 7FE469FB92A6AE7349B1EA34 /* PBXContainerItemProxy */;
+		};
+		254B40BB7F4883DF31A21547 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 333A25634BDE9571F0D55915 /* VoiceInputCore */;
+			targetProxy = 84FFAFE4DCAF4C120B893FB4 /* PBXContainerItemProxy */;
+		};
+		2936E92619C310A82F974C57 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 333A25634BDE9571F0D55915 /* VoiceInputCore */;
+			targetProxy = 59EC8201707EEE1E3C530647 /* PBXContainerItemProxy */;
+		};
+		2ADDE3942AB6CAE091355A23 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8B89EFD48E9B16C717C20350 /* VoiceInputKeyboard */;
+			targetProxy = 6774D2F1AA8BF9DCBBAF13B7 /* PBXContainerItemProxy */;
+		};
+		387114EC9C1BAA01CEAD33E6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 333A25634BDE9571F0D55915 /* VoiceInputCore */;
+			targetProxy = 9F0650B275373A42FF2F32F3 /* PBXContainerItemProxy */;
+		};
+		3881304453D75E9A05F07388 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 333A25634BDE9571F0D55915 /* VoiceInputCore */;
+			targetProxy = 118450291ECE744D1197C090 /* PBXContainerItemProxy */;
+		};
+		5A59821263687922CD1D0CDC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5FB767933CA186082C0D324F /* VoiceInputMobileShared */;
+			targetProxy = F8FBD496958C36F772036C43 /* PBXContainerItemProxy */;
+		};
+		B555CC6BE242AAB1B23C59C1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5FB767933CA186082C0D324F /* VoiceInputMobileShared */;
+			targetProxy = 911C1686F29A89BE9D6D8060 /* PBXContainerItemProxy */;
+		};
+		D8BF2CEC18346250929B51C9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D01D92271FF9CAD671FD22F5 /* VoiceInputiOS */;
+			targetProxy = 1C004B84479AC62B4F7090AF /* PBXContainerItemProxy */;
+		};
+		E79C07B45254592DB43E689D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8B89EFD48E9B16C717C20350 /* VoiceInputKeyboard */;
+			targetProxy = 01A29B96284EB08C513F58E6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0E318153CC30823855728716 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = VoiceInputKeyboard/Resources/VoiceInputKeyboard.entitlements;
+				INFOPLIST_FILE = VoiceInputKeyboard/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.ios.keyboard;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		270C8B8D8DE347A6CA34A115 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = VoiceInputKeyboard/Resources/VoiceInputKeyboard.entitlements;
+				INFOPLIST_FILE = VoiceInputKeyboard/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.ios.keyboard;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4087B87ED04AADDE50A8F273 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = VoiceInputMobileTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.ios.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceInputiOS.app/VoiceInputiOS";
+			};
+			name = Release;
+		};
+		4736D633ED1B100F741B5FC2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = VoiceInputCore/Resources/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.core;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		659EA27E0296FA20B6FCE2FB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = VoiceInputMobileTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.ios.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/VoiceInputiOS.app/VoiceInputiOS";
+			};
+			name = Debug;
+		};
+		71C7FF5EDD87180B400840A2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = VoiceInputMobileShared/Resources/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.mobile.shared;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Debug;
+		};
+		8AAE6A64CFB486649DC83E95 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = VoiceInputiOS/Resources/VoiceInputiOS.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = VoiceInputiOS/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.ios;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		913F9110905D572387EA06C9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = VoiceInputiOSQA/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.ios.qa;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		965E8362A20F250198F3D1C7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		A32E715FA1A8217D6C63CAB8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = VoiceInputiOSQA/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.ios.qa;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		ABA5D72986AF961BDA4D8AD8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		DD2948081FDCF168335255F0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = VoiceInputMobileShared/Resources/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.mobile.shared;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		DEE480894CAA33BCC86A7CC3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = VoiceInputCore/Resources/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.core;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Release;
+		};
+		F45489A3A004EBE7FDBEDA76 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = VoiceInputiOS/Resources/VoiceInputiOS.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = VoiceInputiOS/Resources/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.voiceinput.ios;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0FC2C8E6735C7E751C6E9464 /* Build configuration list for PBXNativeTarget "VoiceInputiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8AAE6A64CFB486649DC83E95 /* Debug */,
+				F45489A3A004EBE7FDBEDA76 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		24D58ECF66131B644B36CB5E /* Build configuration list for PBXNativeTarget "VoiceInputMobileShared" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				71C7FF5EDD87180B400840A2 /* Debug */,
+				DD2948081FDCF168335255F0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5A9DEBDE29CAED420FD1D04E /* Build configuration list for PBXNativeTarget "VoiceInputMobileTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				659EA27E0296FA20B6FCE2FB /* Debug */,
+				4087B87ED04AADDE50A8F273 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6741E39C20B865004DC8A5D3 /* Build configuration list for PBXNativeTarget "VoiceInputCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4736D633ED1B100F741B5FC2 /* Debug */,
+				DEE480894CAA33BCC86A7CC3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9CE3B10F31B8C236E411ED97 /* Build configuration list for PBXNativeTarget "VoiceInputKeyboard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				270C8B8D8DE347A6CA34A115 /* Debug */,
+				0E318153CC30823855728716 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A261426BD47B821C2FDE223B /* Build configuration list for PBXProject "VoiceInputMobile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				965E8362A20F250198F3D1C7 /* Debug */,
+				ABA5D72986AF961BDA4D8AD8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D719641ACA99B7BFCD615E06 /* Build configuration list for PBXNativeTarget "VoiceInputiOSQA" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A32E715FA1A8217D6C63CAB8 /* Debug */,
+				913F9110905D572387EA06C9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		25A4FB93E728ED86EC613462 /* XCRemoteSwiftPackageReference "WhisperKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/argmaxinc/WhisperKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7C4749CE2462097CCA7675B7 /* WhisperKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25A4FB93E728ED86EC613462 /* XCRemoteSwiftPackageReference "WhisperKit" */;
+			productName = WhisperKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 130AA2E8CF4F0A18666E9D00 /* Project object */;
+}
