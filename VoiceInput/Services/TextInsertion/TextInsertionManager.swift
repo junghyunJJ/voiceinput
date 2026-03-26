@@ -29,9 +29,24 @@ struct TextInsertionManager {
         case clipboard
     }
 
+    struct RepairContext {
+        fileprivate let accessibilityContext: AccessibilityInserter.RepairContext?
+
+        init(accessibilityContext: AccessibilityInserter.RepairContext? = nil) {
+            self.accessibilityContext = accessibilityContext
+        }
+    }
+
     struct InsertionResult {
         let success: Bool
         let method: InsertionMethod
+        let repairContext: RepairContext?
+
+        init(success: Bool, method: InsertionMethod, repairContext: RepairContext? = nil) {
+            self.success = success
+            self.method = method
+            self.repairContext = repairContext
+        }
     }
 
     /// Insert text at the current cursor position using the best available method.
@@ -45,9 +60,14 @@ struct TextInsertionManager {
         if accessibilityAvailable {
             // Tier 1: Try Accessibility API
             log("Tier 1: attempting AccessibilityInserter...")
-            if accessibilityInserter.insert(text) {
+            let accessibilityResult = accessibilityInserter.insert(text)
+            if accessibilityResult.success {
                 log("Tier 1: SUCCESS (accessibility)")
-                return InsertionResult(success: true, method: .accessibility)
+                return InsertionResult(
+                    success: true,
+                    method: .accessibility,
+                    repairContext: accessibilityResult.repairContext.map { RepairContext(accessibilityContext: $0) }
+                )
             }
             log("Tier 1: FAILED, falling through to Tier 2")
 
@@ -73,5 +93,23 @@ struct TextInsertionManager {
         let pasteSuccess = clipboardInserter.insert(text)
         log("Tier 3: \(pasteSuccess ? "SUCCESS" : "FAILED") (clipboard)")
         return InsertionResult(success: pasteSuccess, method: .clipboard)
+    }
+
+    func repairRecentlyInsertedText(
+        _ updatedText: String,
+        using context: RepairContext,
+        accessibilityAvailable: Bool = false
+    ) -> InsertionResult {
+        guard accessibilityAvailable,
+              let accessibilityContext = context.accessibilityContext else {
+            return InsertionResult(success: false, method: .accessibility)
+        }
+
+        let result = accessibilityInserter.repair(updatedText, using: accessibilityContext)
+        return InsertionResult(
+            success: result.success,
+            method: .accessibility,
+            repairContext: result.repairContext.map { RepairContext(accessibilityContext: $0) }
+        )
     }
 }

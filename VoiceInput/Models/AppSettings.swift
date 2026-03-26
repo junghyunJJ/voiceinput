@@ -1,6 +1,7 @@
 import Carbon
 import Foundation
 import SwiftUI
+import VoiceInputCore
 
 enum HotkeyMode: String, CaseIterable, Identifiable {
     case toggle = "toggle"
@@ -153,7 +154,9 @@ struct CopyActionShortcut: Codable, Equatable {
 final class AppSettings {
     static let shared = AppSettings()
 
-    private let defaults = UserDefaults.standard
+    private let defaults: UserDefaults
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
 
     var hotkeyMode: HotkeyMode {
         didSet { defaults.set(hotkeyMode.rawValue, forKey: "hotkeyMode") }
@@ -189,15 +192,47 @@ final class AppSettings {
 
     var copyActionShortcut: CopyActionShortcut {
         didSet {
-            if let data = try? JSONEncoder().encode(copyActionShortcut) {
+            if let data = try? encoder.encode(copyActionShortcut) {
                 defaults.set(data, forKey: "copyActionShortcut")
             }
         }
     }
 
-    private init() {
+    var transcriptionGlossary: [TranscriptionGlossaryItem] {
+        didSet {
+            if let data = try? encoder.encode(transcriptionGlossary) {
+                defaults.set(data, forKey: "transcriptionGlossary")
+            }
+        }
+    }
+
+    var transcriptionCorrections: [TranscriptionCorrectionRule] {
+        didSet {
+            if let data = try? encoder.encode(transcriptionCorrections) {
+                defaults.set(data, forKey: "transcriptionCorrections")
+            }
+        }
+    }
+
+    var transcriptionCandidateCorrections: [TranscriptionCandidateCorrectionRule] {
+        didSet {
+            if let data = try? encoder.encode(transcriptionCandidateCorrections) {
+                defaults.set(data, forKey: "transcriptionCandidateCorrections")
+            }
+        }
+    }
+
+    var outputPreset: TranscriptionOutputPreset {
+        didSet {
+            defaults.set(outputPreset.rawValue, forKey: "outputPreset")
+        }
+    }
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+
         // Load persisted values with defaults
-        let d = UserDefaults.standard
+        let d = defaults
         self.hotkeyMode = HotkeyMode(rawValue: d.string(forKey: "hotkeyMode") ?? "") ?? .toggle
         self.selectedLanguage = TranscriptionLanguage(rawValue: d.string(forKey: "selectedLanguage") ?? "") ?? .auto
         self.selectedModel = d.string(forKey: "selectedModel") ?? Constants.Transcription.defaultModelVariant
@@ -207,10 +242,48 @@ final class AppSettings {
         self.hasCompletedOnboarding = d.bool(forKey: "hasCompletedOnboarding")
         self.autoInsertText = d.object(forKey: "autoInsertText") == nil ? true : d.bool(forKey: "autoInsertText")
         if let data = d.data(forKey: "copyActionShortcut"),
-           let shortcut = try? JSONDecoder().decode(CopyActionShortcut.self, from: data) {
+           let shortcut = try? decoder.decode(CopyActionShortcut.self, from: data) {
             self.copyActionShortcut = shortcut
         } else {
             self.copyActionShortcut = .default
         }
+        if let data = d.data(forKey: "transcriptionGlossary"),
+           let glossary = try? decoder.decode([TranscriptionGlossaryItem].self, from: data) {
+            self.transcriptionGlossary = glossary
+        } else {
+            self.transcriptionGlossary = []
+        }
+        if let data = d.data(forKey: "transcriptionCorrections"),
+           let corrections = try? decoder.decode([TranscriptionCorrectionRule].self, from: data) {
+            self.transcriptionCorrections = corrections.normalizedForPersistence
+        } else {
+            self.transcriptionCorrections = []
+        }
+        if let data = d.data(forKey: "transcriptionCandidateCorrections"),
+           let candidateCorrections = try? decoder.decode([TranscriptionCandidateCorrectionRule].self, from: data) {
+            self.transcriptionCandidateCorrections = candidateCorrections.normalizedForEvaluation
+        } else {
+            self.transcriptionCandidateCorrections = []
+        }
+        self.outputPreset = TranscriptionOutputPreset(rawValue: d.string(forKey: "outputPreset") ?? "") ?? .verbatim
+    }
+
+    var sharedSettingsSnapshot: SharedSettings {
+        SharedSettings(
+            selectedLanguage: DictationLanguage(rawValue: selectedLanguage.rawValue) ?? .auto,
+            selectedModel: selectedModel,
+            recordingMode: RecordingMode(rawValue: hotkeyMode.rawValue) ?? .toggle,
+            autoInsertText: autoInsertText,
+            enablePunctuation: true,
+            keepQuickNoteHistory: true,
+            glossary: transcriptionGlossary,
+            corrections: transcriptionCorrections,
+            candidateCorrections: transcriptionCandidateCorrections,
+            outputPreset: outputPreset
+        )
+    }
+
+    var postTranscriptionProcessingConfiguration: PostTranscriptionProcessingConfiguration {
+        sharedSettingsSnapshot.postTranscriptionProcessingConfiguration
     }
 }

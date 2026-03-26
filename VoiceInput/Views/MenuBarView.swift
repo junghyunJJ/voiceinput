@@ -2,25 +2,71 @@ import AppKit
 import SwiftUI
 
 struct MenuBarView: View {
+    @Environment(\.openSettings) private var openSettings
     @Bindable var viewModel: AppViewModel
+    @State private var actionFeedback: String?
+    @State private var actionFeedbackClearTask: Task<Void, Never>?
 
     var body: some View {
         VStack(spacing: 0) {
-            // Status
-            HStack {
-                Circle()
-                    .fill(statusColor)
-                    .frame(width: 8, height: 8)
-                Text(viewModel.recordingState.statusText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+            statusSection
+            Divider()
+            recordSection
+
+            if !viewModel.lastTranscription.isEmpty {
+                Divider()
+                lastResultSection
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
+
+            if !viewModel.suppressedCandidateSuggestions.isEmpty {
+                Divider()
+                suggestionsSection
+            }
 
             Divider()
+            settingsSection
 
-            // Record / Stop button
+            Divider()
+            Button("Quit Voice Input") {
+                viewModel.quit()
+            }
+            .keyboardShortcut("q", modifiers: .command)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .onDisappear {
+            actionFeedbackClearTask?.cancel()
+        }
+    }
+
+    private var statusSection: some View {
+        HStack(spacing: 8) {
+            Circle()
+                .fill(statusColor)
+                .frame(width: 8, height: 8)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("VoiceInput")
+                    .font(.caption.weight(.semibold))
+                Text(viewModel.recordingState.statusText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                if let actionFeedback, !actionFeedback.isEmpty {
+                    Text(actionFeedback)
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+    }
+
+    private var recordSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader("Record")
+
             Button {
                 Task {
                     await viewModel.toggleRecording()
@@ -37,36 +83,114 @@ struct MenuBarView: View {
             }
             .keyboardShortcut("r", modifiers: .command)
             .disabled(viewModel.recordingState.isProcessing)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+    }
 
-            Divider()
+    private var lastResultSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader("Last Result")
 
-            // Last transcription
-            if !viewModel.lastTranscription.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Last Transcription:")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                    Text(viewModel.lastTranscription)
-                        .font(.caption)
-                        .lineLimit(3)
-                        .textSelection(.enabled)
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Saved output")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+
+                Text(viewModel.lastTranscription)
+                    .font(.caption)
+                    .lineLimit(3)
+                    .textSelection(.enabled)
+
+                Button("Copy Last Transcription") {
+                    viewModel.copyLastTranscription()
+                    setActionFeedback("Copied last transcription.")
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .keyboardShortcut(
+                    viewModel.settings.copyActionShortcut.keyEquivalent,
+                    modifiers: viewModel.settings.copyActionShortcut.eventModifiers
+                )
+                .disabled(viewModel.lastTranscription.isEmpty)
             }
-
-            Button("Copy Last Transcription") {
-                viewModel.copyLastTranscription()
-            }
-            .keyboardShortcut(
-                viewModel.settings.copyActionShortcut.keyEquivalent,
-                modifiers: viewModel.settings.copyActionShortcut.eventModifiers
+            .padding(8)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color.secondary.opacity(0.08))
             )
-            .disabled(viewModel.lastTranscription.isEmpty)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+    }
 
-            Divider()
+    private var suggestionsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader("Suggestions")
 
-            // Model status & download
+            ForEach(Array(viewModel.suppressedCandidateSuggestions.enumerated()), id: \.offset) { index, candidate in
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("Manual fix")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                        Spacer()
+                        Text("Confidence \(Int(candidate.confidence * 100))%")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+
+                    Text(candidate.sourceText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+
+                    Text("→ \(candidate.resolvedReplacement)")
+                        .font(.caption.weight(.semibold))
+                        .lineLimit(1)
+
+                    HStack(spacing: 6) {
+                        suggestionActionButton("Save as Rule") {
+                            let didSave = viewModel.saveSuppressedCandidateSuggestionAsRule(at: index)
+                            setActionFeedback(didSave ? "Saved as rule." : "Rule already saved.")
+                        }
+                        .disabled(!viewModel.canSaveSuppressedCandidateSuggestionAsRule(at: index))
+
+                        if viewModel.canRepairSuppressedCandidateSuggestions {
+                            suggestionActionButton("Apply to App") {
+                                let didApply = viewModel.applySuppressedCandidateSuggestion(at: index)
+                                setActionFeedback(didApply ? "Applied to app." : "Could not apply to app.")
+                            }
+                        } else {
+                            suggestionActionButton("Copy Corrected Text") {
+                                let didCopy = viewModel.copySuppressedCandidateSuggestion(at: index)
+                                setActionFeedback(didCopy ? "Copied corrected text." : "Could not copy corrected text.")
+                            }
+                            .disabled(!viewModel.canCopySuppressedCandidateSuggestion(at: index))
+                        }
+
+                        Spacer()
+                    }
+                }
+                .padding(8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Color.secondary.opacity(0.08))
+                )
+            }
+
+            if let repairUnavailableReason = viewModel.suppressedCandidateRepairUnavailableReason {
+                Text(repairUnavailableReason)
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+    }
+
+    private var settingsSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader("Settings")
+
             if viewModel.modelManager.isDownloading {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
@@ -79,8 +203,6 @@ struct MenuBarView: View {
                     }
                     ProgressView(value: viewModel.modelManager.downloadProgressClamped)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
             } else {
                 Menu("Model: \(viewModel.settings.selectedModel)") {
                     ForEach(viewModel.modelManager.availableModels) { model in
@@ -97,7 +219,6 @@ struct MenuBarView: View {
                 }
             }
 
-            // Language
             Menu("Language: \(viewModel.settings.selectedLanguage.displayName)") {
                 ForEach(TranscriptionLanguage.allCases) { lang in
                     Button(lang.displayName) {
@@ -106,20 +227,42 @@ struct MenuBarView: View {
                 }
             }
 
-            // Settings
             Button("Settings...") {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                NSApp.activate()
+                MenuBarActions.openSettings(
+                    open: openSettings.callAsFunction,
+                    activate: NSApp.activate
+                )
             }
             .keyboardShortcut(",", modifiers: .command)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+    }
 
-            Divider()
+    private func sectionHeader(_ title: String) -> some View {
+        Text(title)
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.tertiary)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
 
-            // Quit
-            Button("Quit Voice Input") {
-                viewModel.quit()
+    private func suggestionActionButton(_ title: String, action: @escaping () -> Void) -> some View {
+        Button(title, action: action)
+            .buttonStyle(.borderless)
+            .font(.caption.weight(.semibold))
+    }
+
+    private func setActionFeedback(_ message: String) {
+        actionFeedback = message
+        actionFeedbackClearTask?.cancel()
+        actionFeedbackClearTask = Task {
+            try? await Task.sleep(for: .seconds(2.5))
+            guard !Task.isCancelled else {
+                return
             }
-            .keyboardShortcut("q", modifiers: .command)
+            await MainActor.run {
+                actionFeedback = nil
+            }
         }
     }
 

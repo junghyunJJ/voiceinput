@@ -2,6 +2,7 @@ import AppKit
 import Foundation
 import ServiceManagement
 import SwiftUI
+import VoiceInputCore
 
 private func trace(_ message: String) {
     let url = URL(fileURLWithPath: "/tmp/voiceinput-trace.log")
@@ -37,39 +38,177 @@ private func log(_ message: String) {
 /// Main coordinator for the Voice Input app.
 /// Manages recording lifecycle, transcription, and text insertion.
 @MainActor
+struct AppViewModelDependencies {
+    var isMicrophoneGranted: () -> Bool
+    var requestMicrophonePermission: () async -> Bool
+    var isAccessibilityGranted: () -> Bool
+    var refreshPermissions: () -> Void
+    var requestAccessibilityPermission: () -> Void
+    var loadModel: (String) async throws -> Void
+    var unloadModel: () async -> Void
+    var startCapture: () async throws -> Void
+    var stopCapture: () async -> AudioCaptureResult
+    var transcribe: ([Float], String?) async throws -> TranscriptionResult
+    var processTranscription: (String) -> PostTranscriptionProcessingResult
+    var insertText: (String, Bool) -> TextInsertionManager.InsertionResult
+    var repairInsertedText: (String, TextInsertionManager.RepairContext, Bool) -> TextInsertionManager.InsertionResult
+    var resetHotkeyState: () -> Void
+    var registerHotkeys: (HotkeyMode, CopyActionShortcut) -> Void
+    var updateCopyShortcut: (CopyActionShortcut) -> Void
+    var copyToClipboard: (String) -> Void
+}
+
+@MainActor
 @Observable
 final class AppViewModel {
+    private struct RecentInsertionState {
+        let insertedText: String
+        let method: TextInsertionManager.InsertionMethod
+        let repairContext: TextInsertionManager.RepairContext?
+    }
+
     // MARK: - State
 
     var recordingState: RecordingState = .idle
     var lastTranscription: String = ""
+    var suppressedCandidateSuggestions: [TranscriptionCandidateCorrection] = []
     var errorMessage: String?
     var showError = false
+    var canRepairSuppressedCandidateSuggestions: Bool {
+        guard let recentInsertionState else {
+            return false
+        }
+
+        return recentInsertionState.method == .accessibility &&
+            recentInsertionState.repairContext != nil &&
+            recentInsertionState.insertedText == lastTranscription
+    }
+    var suppressedCandidateRepairUnavailableReason: String? {
+        guard !suppressedCandidateSuggestions.isEmpty,
+              !canRepairSuppressedCandidateSuggestions else {
+            return nil
+        }
+
+        guard let recentInsertionState else {
+            return "In-place repair is only available for the most recent Accessibility insertion."
+        }
+
+        if recentInsertionState.method != .accessibility {
+            return "This text was inserted via keyboard or clipboard fallback, so it can't be repaired in place."
+        }
+
+        if recentInsertionState.repairContext == nil {
+            return "This insertion did not capture a repairable Accessibility context."
+        }
+
+        return "The inserted app text changed, so in-place repair is unavailable."
+    }
 
     // MARK: - Services
 
-    var settings = AppSettings.shared
-    let permissions = PermissionsManager()
-    let modelManager = ModelManager()
-    let hotkeyManager = HotkeyManager()
+    var settings: AppSettings
+    let permissions: PermissionsManager
+    let modelManager: ModelManager
+    let hotkeyManager: HotkeyManager
 
-    private let audioService = AudioService()
-    private let transcriptionEngine = WhisperKitEngine()
-    private let textInsertionManager = TextInsertionManager()
+    private let dependencies: AppViewModelDependencies
     private var isModelLoaded = false
     private var overlayPanel: OverlayPanel?
     private var isProcessing = false  // Guard against duplicate hotkey triggers
+    private let noAudioFailureErrorThreshold = 3
     private var consecutiveNoAudioFailures = 0
+    private var recentInsertionState: RecentInsertionState?
 
     // MARK: - Init
 
-    init() {
+    convenience init() {
+        self.init(
+            settings: .shared,
+            permissions: PermissionsManager(),
+            modelManager: ModelManager(),
+            hotkeyManager: HotkeyManager(),
+            audioService: AudioService(),
+            transcriptionEngine: WhisperKitEngine(),
+            textInsertionManager: TextInsertionManager(),
+            postTranscriptionProcessor: PostTranscriptionProcessor()
+        )
+    }
+
+    init(
+        settings: AppSettings,
+        permissions: PermissionsManager,
+        modelManager: ModelManager,
+        hotkeyManager: HotkeyManager,
+        audioService: AudioService,
+        transcriptionEngine: any TranscriptionEngine,
+        textInsertionManager: TextInsertionManager,
+        postTranscriptionProcessor: PostTranscriptionProcessor,
+        dependencies: AppViewModelDependencies? = nil,
+        autoSetup: Bool = true,
+        promptForAccessibilityIfNeeded: Bool = true
+    ) {
+        self.settings = settings
+        self.permissions = permissions
+        self.modelManager = modelManager
+        self.hotkeyManager = hotkeyManager
+        self.dependencies = dependencies ?? AppViewModelDependencies(
+            isMicrophoneGranted: { permissions.microphoneGranted },
+            requestMicrophonePermission: { await permissions.requestMicrophonePermission() },
+            isAccessibilityGranted: { permissions.accessibilityGranted },
+            refreshPermissions: { permissions.refreshPermissions() },
+            requestAccessibilityPermission: { permissions.requestAccessibilityPermission() },
+            loadModel: { variant in
+                try await transcriptionEngine.loadModel(variant: variant)
+            },
+            unloadModel: {
+                await transcriptionEngine.unloadModel()
+            },
+            startCapture: {
+                try await audioService.startCapture()
+            },
+            stopCapture: {
+                await audioService.stopCapture()
+            },
+            transcribe: { audioSamples, language in
+                try await transcriptionEngine.transcribe(audioSamples: audioSamples, language: language)
+            },
+            processTranscription: { [settings] text in
+                let effectiveProcessor = PostTranscriptionProcessor(
+                    configuration: settings.postTranscriptionProcessingConfiguration
+                )
+                return effectiveProcessor.process(text)
+            },
+            insertText: { text, accessibilityAvailable in
+                textInsertionManager.insert(text, accessibilityAvailable: accessibilityAvailable)
+            },
+            repairInsertedText: { text, context, accessibilityAvailable in
+                textInsertionManager.repairRecentlyInsertedText(
+                    text,
+                    using: context,
+                    accessibilityAvailable: accessibilityAvailable
+                )
+            },
+            resetHotkeyState: { hotkeyManager.resetState() },
+            registerHotkeys: { mode, copyShortcut in
+                hotkeyManager.register(mode: mode, copyShortcut: copyShortcut)
+            },
+            updateCopyShortcut: { shortcut in
+                hotkeyManager.updateCopyShortcut(shortcut)
+            },
+            copyToClipboard: { text in
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(text, forType: .string)
+            }
+        )
+
         setupHotkey()
-        // Pre-load model on app launch (not lazily on menu open)
-        Task { await self.setup() }
+        if autoSetup {
+            // Pre-load model on app launch (not lazily on menu open)
+            Task { await self.setup() }
+        }
         // Prompt for accessibility if not already granted
-        if !permissions.accessibilityGranted {
-            permissions.requestAccessibilityPermission()
+        if promptForAccessibilityIfNeeded && !permissions.accessibilityGranted {
+            self.dependencies.requestAccessibilityPermission()
         }
     }
 
@@ -79,7 +218,7 @@ final class AppViewModel {
         // Load the selected model on launch
         log("[VoiceInput] Setup: loading model '\(settings.selectedModel)'...")
         do {
-            try await transcriptionEngine.loadModel(variant: settings.selectedModel)
+            try await dependencies.loadModel(settings.selectedModel)
             isModelLoaded = true
             log("[VoiceInput] Setup: model loaded successfully")
         } catch {
@@ -111,10 +250,7 @@ final class AppViewModel {
             }
         }
 
-        hotkeyManager.register(
-            mode: settings.hotkeyMode,
-            copyShortcut: settings.copyActionShortcut
-        )
+        dependencies.registerHotkeys(settings.hotkeyMode, settings.copyActionShortcut)
     }
 
     // MARK: - Recording Control
@@ -135,13 +271,13 @@ final class AppViewModel {
         isProcessing = true
 
         // Check permissions
-        log("[VoiceInput] Checking mic permission: \(permissions.microphoneGranted)")
-        if !permissions.microphoneGranted {
-            let granted = await permissions.requestMicrophonePermission()
+        log("[VoiceInput] Checking mic permission: \(dependencies.isMicrophoneGranted())")
+        if !dependencies.isMicrophoneGranted() {
+            let granted = await dependencies.requestMicrophonePermission()
             log("[VoiceInput] Mic permission result: \(granted)")
             if !granted {
                 isProcessing = false
-                hotkeyManager.resetState()
+                dependencies.resetHotkeyState()
                 setError("Microphone permission is required.")
                 return
             }
@@ -152,13 +288,13 @@ final class AppViewModel {
         if !isModelLoaded {
             do {
                 log("[VoiceInput] Loading model \(settings.selectedModel)...")
-                try await transcriptionEngine.loadModel(variant: settings.selectedModel)
+                try await dependencies.loadModel(settings.selectedModel)
                 isModelLoaded = true
                 log("[VoiceInput] Model loaded successfully")
             } catch {
                 log("[VoiceInput] Model load error: \(error)")
                 isProcessing = false
-                hotkeyManager.resetState()
+                dependencies.resetHotkeyState()
                 setError("Failed to load model: \(error.localizedDescription)")
                 return
             }
@@ -167,7 +303,7 @@ final class AppViewModel {
         // Start audio capture
         do {
             log("[VoiceInput] Starting audio capture...")
-            try await audioService.startCapture()
+            try await dependencies.startCapture()
             recordingState = .recording(startTime: Date())
             log("[VoiceInput] Recording started!")
             // Do not play start sound here: output route changes can interrupt input taps.
@@ -175,7 +311,7 @@ final class AppViewModel {
         } catch {
             log("[VoiceInput] Audio capture error: \(error)")
             isProcessing = false
-            hotkeyManager.resetState()
+            dependencies.resetHotkeyState()
             setError("Failed to start recording: \(error.localizedDescription)")
         }
     }
@@ -188,7 +324,7 @@ final class AppViewModel {
 
         // Stop capture and get audio samples
         log("[VoiceInput] Stopping audio capture...")
-        let captureResult = await audioService.stopCapture()
+        let captureResult = await dependencies.stopCapture()
         let audioSamples = captureResult.samples
         let sourceRateText = captureResult.sourceSampleRate.map { String(format: "%.1f", $0) } ?? "nil"
         log("[VoiceInput] Capture result: reason=\(captureResult.stopReason.rawValue), tap=\(captureResult.didReceiveTap), rawBuffers=\(captureResult.rawBufferCount), frames=\(captureResult.totalFrames), sourceRate=\(sourceRateText)")
@@ -210,11 +346,9 @@ final class AppViewModel {
                 ? nil
                 : settings.selectedLanguage.rawValue
 
-            let result = try await transcriptionEngine.transcribe(
-                audioSamples: audioSamples,
-                language: language
-            )
-            let transcribedText = result.text
+            let result = try await dependencies.transcribe(audioSamples, language)
+            let processedResult = dependencies.processTranscription(result.text)
+            let transcribedText = processedResult.processedText
             let transcribedLang = result.language
             let transcribedDuration = result.duration
             log("[VoiceInput] Transcription result: '\(transcribedText)' (lang: \(transcribedLang), \(String(format: "%.2f", transcribedDuration))s)")
@@ -226,21 +360,30 @@ final class AppViewModel {
             }
 
             lastTranscription = transcribedText
+            suppressedCandidateSuggestions = refreshedSuppressedCandidates(for: transcribedText)
+            recentInsertionState = nil
 
             // Insert text at cursor
             if settings.autoInsertText {
                 recordingState = .inserting(text: transcribedText)
 
                 // Refresh accessibility check (may change after app launch or rebuild)
-                permissions.refreshPermissions()
-                log("[VoiceInput] Accessibility granted: \(permissions.accessibilityGranted)")
+                dependencies.refreshPermissions()
+                let accessibilityGranted = dependencies.isAccessibilityGranted()
+                log("[VoiceInput] Accessibility granted: \(accessibilityGranted)")
                 log("[VoiceInput] Inserting text: '\(transcribedText.prefix(50))...'")
 
                 // Pass accessibility status so insertion can choose the right method
-                let insertResult = textInsertionManager.insert(transcribedText, accessibilityAvailable: permissions.accessibilityGranted)
+                let insertResult = dependencies.insertText(transcribedText, accessibilityGranted)
                 log("[VoiceInput] Insert result: success=\(insertResult.success), method=\(insertResult.method.rawValue)")
 
-                if !insertResult.success {
+                if insertResult.success {
+                    recentInsertionState = RecentInsertionState(
+                        insertedText: transcribedText,
+                        method: insertResult.method,
+                        repairContext: insertResult.repairContext
+                    )
+                } else {
                     copyToClipboardWithNotification(transcribedText)
                 }
             } else {
@@ -261,7 +404,12 @@ final class AppViewModel {
 
         let reason = result.stopReason.rawValue
         log("[VoiceInput] No-audio failure count: \(consecutiveNoAudioFailures), reason=\(reason)")
-        // Keep this non-blocking for UX; avoid modal error popups on intermittent capture misses.
+        guard consecutiveNoAudioFailures >= noAudioFailureErrorThreshold else {
+            // Keep this non-blocking for UX; avoid modal error popups on intermittent capture misses.
+            return
+        }
+
+        setError(noAudioCaptureMessage(for: result.stopReason))
     }
 
     // MARK: - Overlay Panel
@@ -284,18 +432,18 @@ final class AppViewModel {
         recordingState = .idle
         isProcessing = false
         hideOverlayPanel()
-        hotkeyManager.resetState()
+        dependencies.resetHotkeyState()
     }
 
     // MARK: - Model Management
 
     func switchModel(to variant: String) async {
         isModelLoaded = false
-        await transcriptionEngine.unloadModel()
+        await dependencies.unloadModel()
         settings.selectedModel = variant
 
         do {
-            try await transcriptionEngine.loadModel(variant: variant)
+            try await dependencies.loadModel(variant)
             isModelLoaded = true
         } catch {
             setError("Failed to load model '\(variant)': \(error.localizedDescription)")
@@ -306,18 +454,114 @@ final class AppViewModel {
 
     func updateHotkeyMode(_ mode: HotkeyMode) {
         settings.hotkeyMode = mode
-        hotkeyManager.register(mode: mode, copyShortcut: settings.copyActionShortcut)
+        dependencies.registerHotkeys(mode, settings.copyActionShortcut)
     }
 
     func updateCopyActionShortcut(_ shortcut: CopyActionShortcut) {
         settings.copyActionShortcut = shortcut
-        hotkeyManager.updateCopyShortcut(shortcut)
+        dependencies.updateCopyShortcut(shortcut)
     }
 
     func copyLastTranscription() {
         guard !lastTranscription.isEmpty else { return }
         copyToClipboard(lastTranscription)
         log("[VoiceInput] Copied last transcription to clipboard")
+    }
+
+    func canCopySuppressedCandidateSuggestion(at index: Int) -> Bool {
+        correctedSuppressedCandidateSuggestion(at: index) != nil
+    }
+
+    @discardableResult
+    func copySuppressedCandidateSuggestion(at index: Int) -> Bool {
+        guard let correctedText = correctedSuppressedCandidateSuggestion(at: index) else {
+            return false
+        }
+
+        copyToClipboard(correctedText)
+        log("[VoiceInput] Copied corrected suggestion to clipboard")
+        return true
+    }
+
+    func canSaveSuppressedCandidateSuggestionAsRule(at index: Int) -> Bool {
+        guard suppressedCandidateSuggestions.indices.contains(index) else {
+            return false
+        }
+
+        return suppressedCandidateSuggestions[index].promotedAlwaysApplyRule != nil
+    }
+
+    @discardableResult
+    func saveSuppressedCandidateSuggestionAsRule(at index: Int) -> Bool {
+        guard suppressedCandidateSuggestions.indices.contains(index) else {
+            return false
+        }
+
+        let existingRules = settings.transcriptionCandidateCorrections
+        let updatedRules = existingRules.upsertingPromotedSuggestion(
+            suppressedCandidateSuggestions[index]
+        )
+        guard updatedRules != existingRules else {
+            log("[VoiceInput] Suppressed suggestion rule already saved")
+            return false
+        }
+
+        settings.transcriptionCandidateCorrections = updatedRules
+        log("[VoiceInput] Saved suppressed suggestion as always-on correction rule")
+        return true
+    }
+
+    @discardableResult
+    func applySuppressedCandidateSuggestion(at index: Int) -> Bool {
+        guard suppressedCandidateSuggestions.indices.contains(index) else {
+            return false
+        }
+
+        let candidate = suppressedCandidateSuggestions[index]
+        guard let updated = candidate.applying(to: lastTranscription) else {
+            return false
+        }
+
+        guard let currentInsertionState = recentInsertionState,
+              currentInsertionState.insertedText == lastTranscription,
+              let repairContext = currentInsertionState.repairContext,
+              currentInsertionState.method == .accessibility else {
+            return false
+        }
+
+        dependencies.refreshPermissions()
+        let accessibilityGranted = dependencies.isAccessibilityGranted()
+        let repairResult = dependencies.repairInsertedText(
+            updated,
+            repairContext,
+            accessibilityGranted
+        )
+        guard repairResult.success else {
+            return false
+        }
+
+        recentInsertionState = RecentInsertionState(
+            insertedText: updated,
+            method: repairResult.method,
+            repairContext: repairResult.repairContext
+        )
+
+        lastTranscription = updated
+        suppressedCandidateSuggestions = refreshedSuppressedCandidates(for: updated)
+        return true
+    }
+
+    private func refreshedSuppressedCandidates(for visibleText: String) -> [TranscriptionCandidateCorrection] {
+        dependencies.processTranscription(visibleText).suppressedCandidates
+    }
+
+    private func correctedSuppressedCandidateSuggestion(at index: Int) -> String? {
+        guard suppressedCandidateSuggestions.indices.contains(index) else {
+            return nil
+        }
+
+        let candidate = suppressedCandidateSuggestions[index]
+        return candidate.applying(to: lastTranscription)
     }
 
     func toggleLaunchAtLogin() {
@@ -337,13 +581,21 @@ final class AppViewModel {
     // MARK: - Clipboard Fallback
 
     private func copyToClipboard(_ text: String) {
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(text, forType: .string)
+        dependencies.copyToClipboard(text)
     }
 
     private func copyToClipboardWithNotification(_ text: String) {
         copyToClipboard(text)
         log("[VoiceInput] Copied to clipboard (Cmd+V to paste)")
+    }
+
+    private func noAudioCaptureMessage(for reason: AudioCaptureStopReason) -> String {
+        switch reason {
+        case .engineConfigurationChanged, .engineStoppedBeforeFirstTap:
+            return "Microphone capture stopped before any audio reached Voice Input. Check System Settings > Sound > Input, switch to the microphone you want to use, then retry."
+        case .notCapturing, .noRawBuffersCaptured, .zeroFramesCaptured, .conversionFailed, .ok:
+            return "Voice Input did not receive usable microphone audio. Check System Settings > Sound > Input and confirm your microphone is available, then retry."
+        }
     }
 
     // MARK: - Error Handling
