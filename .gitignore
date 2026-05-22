@@ -20,6 +20,11 @@ build/
 # AI/Dev tool state
 .claude/
 .omc/
+/.artifacts/
+/.cache/
+/.omx/
+/.tmp-home/
+/.tmp/
 
 # Logs
 *.log
