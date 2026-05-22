@@ -46,9 +46,9 @@ struct CopyActionShortcut: Codable, Equatable {
     let keyCode: UInt32
     let modifiers: UInt32
 
-    /// Default: Command+Shift+C
+    /// Default: Command+Shift+X
     static let `default` = CopyActionShortcut(
-        keyCode: UInt32(kVK_ANSI_C),
+        keyCode: UInt32(kVK_ANSI_X),
         modifiers: UInt32(cmdKey | shiftKey)
     )
 
