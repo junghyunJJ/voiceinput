@@ -3,6 +3,7 @@ import SwiftUI
 
 struct MenuBarView: View {
     @Bindable var viewModel: AppViewModel
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         VStack(spacing: 0) {
@@ -108,8 +109,8 @@ struct MenuBarView: View {
 
             // Settings
             Button("Settings...") {
-                NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
-                NSApp.activate()
+                openSettings()
+                NSApp.activate(ignoringOtherApps: true)
             }
             .keyboardShortcut(",", modifiers: .command)
 

@@ -4,9 +4,9 @@ A macOS menu bar app that converts speech to text using on-device AI. Powered by
 
 ## Features
 
-- **On-device processing** — All transcription runs locally via WhisperKit + Core ML. Zero network calls.
+- **On-device processing** — All transcription runs locally via WhisperKit + Core ML. **Zero network calls.**
+- **Multi-language support** — **7 selectable transcription languages**: English, Korean, Japanese, Chinese, Spanish, French, and German, plus auto-detect.
 - **Global hotkey** — Start/stop recording from any app without switching windows.
-- **Multi-language support** — English, Korean, Japanese, Chinese, Spanish, French, German.
 - **Smart text insertion** — Automatically types transcribed text into the active app using Accessibility API, keyboard simulation, or clipboard fallback.
 - **Multiple Whisper models** — Choose the model that fits your speed/accuracy needs.
 - **Menu bar app** — Lives in the menu bar, stays out of your way.
@@ -30,14 +30,14 @@ Most users should install from the [Releases](https://github.com/junghyunJJ/voic
 git clone https://github.com/junghyunJJ/voiceinput.git
 cd voiceinput
 
-# Build
-swift build
-
-# Build and run as .app (development)
+# Install locally and launch as a macOS app
 ./Scripts/build-dev.sh
 ```
 
-For a signed release build with notarization:
+This creates `~/Applications/VoiceInput.app`, signs it for local development, and launches it.
+Use `swift build` only when you want to check that the package compiles without creating or launching the app bundle.
+
+For a signed distribution build with notarization and DMG packaging:
 
 ```bash
 ./Scripts/build-release.sh
