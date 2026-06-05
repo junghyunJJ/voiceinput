@@ -14,8 +14,19 @@ enum Constants {
     enum Transcription {
         static let defaultModelVariant = "small"
         static let modelRepository = "argmaxinc/whisperkit-coreml"
+        static let largeV3TurboModelVariant = "large-v3-v20240930_turbo_632MB"
+        static let legacyLargeV3TurboModelVariant = "large-v3-turbo"
         static let supportedLanguages = ["en", "ko", "ja", "zh", "es", "fr", "de"]
         static let maxCharactersForKeyboardSimulation = 200
+
+        static func canonicalModelVariant(_ variant: String) -> String {
+            switch variant {
+            case legacyLargeV3TurboModelVariant:
+                largeV3TurboModelVariant
+            default:
+                variant
+            }
+        }
     }
 
     enum UI {
