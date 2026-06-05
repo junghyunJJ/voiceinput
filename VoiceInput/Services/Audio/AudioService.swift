@@ -1,4 +1,5 @@
 @preconcurrency import AVFoundation
+import CoreAudio
 import Dispatch
 import Foundation
 
@@ -33,6 +34,45 @@ struct AudioCaptureResult: Sendable {
     let didReceiveTap: Bool
     let sourceSampleRate: Double?
     let stopReason: AudioCaptureStopReason
+}
+
+func hasAvailableSystemInputDevice() -> Bool {
+    var defaultInputAddress = AudioObjectPropertyAddress(
+        mSelector: kAudioHardwarePropertyDefaultInputDevice,
+        mScope: kAudioObjectPropertyScopeGlobal,
+        mElement: kAudioObjectPropertyElementMain
+    )
+    var deviceID = AudioDeviceID(kAudioObjectUnknown)
+    var deviceIDSize = UInt32(MemoryLayout<AudioDeviceID>.size)
+
+    let deviceStatus = AudioObjectGetPropertyData(
+        AudioObjectID(kAudioObjectSystemObject),
+        &defaultInputAddress,
+        0,
+        nil,
+        &deviceIDSize,
+        &deviceID
+    )
+
+    guard deviceStatus == noErr, deviceID != kAudioObjectUnknown else {
+        return false
+    }
+
+    var inputStreamsAddress = AudioObjectPropertyAddress(
+        mSelector: kAudioDevicePropertyStreams,
+        mScope: kAudioDevicePropertyScopeInput,
+        mElement: kAudioObjectPropertyElementMain
+    )
+    var inputStreamsSize: UInt32 = 0
+    let streamsStatus = AudioObjectGetPropertyDataSize(
+        deviceID,
+        &inputStreamsAddress,
+        0,
+        nil,
+        &inputStreamsSize
+    )
+
+    return streamsStatus == noErr && inputStreamsSize >= UInt32(MemoryLayout<AudioStreamID>.size)
 }
 
 /// Thread-safe storage for audio buffers captured from the tap callback.
@@ -328,6 +368,10 @@ actor AudioService {
     }
 
     private func setupCaptureEngine() throws {
+        guard hasAvailableSystemInputDevice() else {
+            throw AudioServiceError.noInputDevice
+        }
+
         let engine = AVAudioEngine()
         let inputNode = engine.inputNode
 
@@ -417,12 +461,15 @@ actor AudioService {
 }
 
 enum AudioServiceError: LocalizedError {
+    case noInputDevice
     case formatCreationFailed
     case converterCreationFailed
     case captureStartupFailed
 
     var errorDescription: String? {
         switch self {
+        case .noInputDevice:
+            return "No microphone input device is available. Connect a microphone or choose an input device in System Settings."
         case .formatCreationFailed:
             return "Failed to create target audio format (16kHz mono)."
         case .converterCreationFailed:
