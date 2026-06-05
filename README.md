@@ -20,11 +20,7 @@ A macOS menu bar app that converts speech to text using on-device AI. Powered by
 
 ## Installation
 
-### 1. Download (Recommended)
-
-Most users should install from the [Releases](https://github.com/junghyunJJ/voiceinput/releases) page.
-
-### 2. Build from Source
+### Build from Source
 
 ```bash
 # Clone the repository
@@ -54,10 +50,10 @@ For a signed distribution build with notarization and DMG packaging:
 
 > Note: Internet is required only for the first model download.
 
-### Default Shortcuts
+### Shortcuts
 
-- **Recording:** `Option + Space` (global)
-- **Copy Last Transcription:** `Command + Shift + X` (global)
+- **Recording:** `Option + Space` by default (global)
+- **Copy Last Transcription:** Configurable in Settings (global)
 
 ### Recording Modes
 
