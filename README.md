@@ -78,11 +78,13 @@ For a signed distribution build with notarization and DMG packaging:
 ### Available Models
 
 | Model | Size | Speed | Accuracy | Best for |
-|-------|------|-------|----------|----------|
-| tiny | ~40 MB | Fastest | Basic | Quick notes, simple phrases |
-| base | ~75 MB | Fast | Good | Everyday use |
-| small | ~250 MB | Moderate | Better | General purpose (default) |
-| large-v3 | ~1.5 GB | Slower | Best | Maximum accuracy |
+| --- | --- | --- | --- | --- |
+| tiny | ~75 MB | Fastest | Basic | Quick notes, simple phrases |
+| base | ~145 MB | Fast | Good | Everyday use |
+| small | ~465 MB | Moderate | Better | General purpose (default) |
+| medium | ~1.5 GB | Slower | High | Longer dictation with better accuracy |
+| large-v3 | ~3.0 GB | Slowest | Best | Maximum accuracy |
+| large-v3-turbo | ~632 MB | Faster than large-v3 | High | Better speed while keeping strong accuracy |
 
 > For the highest transcription accuracy, we recommend **large-v3**.
 

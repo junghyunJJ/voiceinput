@@ -290,15 +290,17 @@ final class AppViewModel {
     // MARK: - Model Management
 
     func switchModel(to variant: String) async {
+        let canonicalVariant = Constants.Transcription.canonicalModelVariant(variant)
+
         isModelLoaded = false
         await transcriptionEngine.unloadModel()
-        settings.selectedModel = variant
+        settings.selectedModel = canonicalVariant
 
         do {
-            try await transcriptionEngine.loadModel(variant: variant)
+            try await transcriptionEngine.loadModel(variant: canonicalVariant)
             isModelLoaded = true
         } catch {
-            setError("Failed to load model '\(variant)': \(error.localizedDescription)")
+            setError("Failed to load model '\(canonicalVariant)': \(error.localizedDescription)")
         }
     }
 

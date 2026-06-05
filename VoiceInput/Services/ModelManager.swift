@@ -25,7 +25,7 @@ final class ModelManager {
         ("small", "Small", "~465 MB"),
         ("medium", "Medium", "~1.5 GB"),
         ("large-v3", "Large v3", "~3.0 GB"),
-        ("large-v3-turbo", "Large v3 Turbo", "~800 MB"),
+        (Constants.Transcription.largeV3TurboModelVariant, "Large v3 Turbo", "~632 MB"),
     ]
 
     var downloadProgressClamped: Double {
