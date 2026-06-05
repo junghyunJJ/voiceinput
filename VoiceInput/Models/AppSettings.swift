@@ -195,12 +195,21 @@ final class AppSettings {
         }
     }
 
+    static func resolveSelectedModel(from defaults: UserDefaults) -> String {
+        let storedModel = defaults.string(forKey: "selectedModel") ?? Constants.Transcription.defaultModelVariant
+        return Constants.Transcription.canonicalModelVariant(storedModel)
+    }
+
     private init() {
         // Load persisted values with defaults
         let d = UserDefaults.standard
         self.hotkeyMode = HotkeyMode(rawValue: d.string(forKey: "hotkeyMode") ?? "") ?? .toggle
         self.selectedLanguage = TranscriptionLanguage(rawValue: d.string(forKey: "selectedLanguage") ?? "") ?? .auto
-        self.selectedModel = d.string(forKey: "selectedModel") ?? Constants.Transcription.defaultModelVariant
+        let resolvedSelectedModel = Self.resolveSelectedModel(from: d)
+        self.selectedModel = resolvedSelectedModel
+        if d.string(forKey: "selectedModel") != resolvedSelectedModel {
+            d.set(resolvedSelectedModel, forKey: "selectedModel")
+        }
         self.launchAtLogin = d.bool(forKey: "launchAtLogin")
         self.showOverlay = d.object(forKey: "showOverlay") == nil ? true : d.bool(forKey: "showOverlay")
         self.playSound = d.object(forKey: "playSound") == nil ? true : d.bool(forKey: "playSound")
