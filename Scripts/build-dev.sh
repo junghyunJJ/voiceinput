@@ -1,13 +1,13 @@
 #!/bin/bash
-# Build, sign, and launch VoiceInput for development
-# Creates .app bundle in ~/Applications with proper signing for Accessibility
+# Build and launch VoiceInput for development
+# Creates .app bundle in ~/Applications.
 
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BINARY="$PROJECT_DIR/.build/arm64-apple-macosx/debug/VoiceInput"
 APP_DIR="$HOME/Applications/VoiceInput.app"
-SIGNING_IDENTITY="VoiceInput Dev"
+SIGNING_IDENTITY="${SIGNING_IDENTITY:--}"
 BUNDLE_ID="com.voiceinput.app"
 
 # Kill existing instance
@@ -23,8 +23,8 @@ mkdir -p "$APP_DIR/Contents/MacOS"
 cp "$BINARY" "$APP_DIR/Contents/MacOS/VoiceInput"
 cp "$PROJECT_DIR/VoiceInput/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
 
-# Sign the .app bundle
-echo "Signing with '$SIGNING_IDENTITY'..."
+# Sign the .app bundle. Defaults to ad-hoc signing so no local certificate is required.
+echo "Signing with '${SIGNING_IDENTITY}'..."
 codesign --force --deep --sign "$SIGNING_IDENTITY" \
   --identifier "$BUNDLE_ID" \
   "$APP_DIR"
