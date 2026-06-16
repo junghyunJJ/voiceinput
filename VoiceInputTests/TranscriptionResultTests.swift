@@ -60,7 +60,7 @@ struct TranscriptionResultTests {
             audioDuration: 18.6
         )
 
-        #expect(summary == "attempt=primary, model=large-v3-v20240930_turbo_632MB, requestedLanguage=ko, audioDuration=18.6s, rawText='[BLANK_AUDIO]', cleanText='', segmentCount=2, segmentStats='temp=0.00 avgLogprob=0.00 compression=0.00 noSpeech=0.00 | temp=0.00 avgLogprob=0.00 compression=0.00 noSpeech=0.00', segmentPreview='[BLANK_AUDIO] | kept\\nline'")
+        #expect(summary == "attempt=primary, model=large-v3-v20240930_turbo_632MB, requestedLanguage=ko, audioDuration=18.6s, rawText='[BLANK_AUDIO]', cleanText='', segmentCount=2, segmentStats='unavailable | unavailable', segmentPreview='[BLANK_AUDIO] | kept\\nline'")
     }
 
     @Test func diagnosticSummaryIncludesSegmentConfidenceStats() {

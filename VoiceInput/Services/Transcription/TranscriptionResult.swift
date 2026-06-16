@@ -30,19 +30,19 @@ struct TranscriptionResult: Sendable {
         let text: String
         let start: TimeInterval
         let end: TimeInterval
-        let temperature: Float
-        let avgLogprob: Float
-        let compressionRatio: Float
-        let noSpeechProb: Float
+        let temperature: Float?
+        let avgLogprob: Float?
+        let compressionRatio: Float?
+        let noSpeechProb: Float?
 
         init(
             text: String,
             start: TimeInterval,
             end: TimeInterval,
-            temperature: Float = 0,
-            avgLogprob: Float = 0,
-            compressionRatio: Float = 0,
-            noSpeechProb: Float = 0
+            temperature: Float? = nil,
+            avgLogprob: Float? = nil,
+            compressionRatio: Float? = nil,
+            noSpeechProb: Float? = nil
         ) {
             self.text = text
             self.start = start
@@ -79,15 +79,7 @@ struct TranscriptionDiagnostics: Sendable {
         self.segmentCount = segments.count
         self.segmentStats = segments
             .prefix(Self.maxSegmentPreviewCount)
-            .map {
-                String(
-                    format: "temp=%.2f avgLogprob=%.2f compression=%.2f noSpeech=%.2f",
-                    $0.temperature,
-                    $0.avgLogprob,
-                    $0.compressionRatio,
-                    $0.noSpeechProb
-                )
-            }
+            .map(Self.segmentStats)
             .joined(separator: " | ")
         self.segmentPreview = segments
             .prefix(Self.maxSegmentPreviewCount)
@@ -113,5 +105,24 @@ struct TranscriptionDiagnostics: Sendable {
         }
 
         return String(singleLine.prefix(maxPreviewCharacters)) + "..."
+    }
+
+    private static func segmentStats(_ segment: TranscriptionResult.Segment) -> String {
+        guard
+            let temperature = segment.temperature,
+            let avgLogprob = segment.avgLogprob,
+            let compressionRatio = segment.compressionRatio,
+            let noSpeechProb = segment.noSpeechProb
+        else {
+            return "unavailable"
+        }
+
+        return String(
+            format: "temp=%.2f avgLogprob=%.2f compression=%.2f noSpeech=%.2f",
+            temperature,
+            avgLogprob,
+            compressionRatio,
+            noSpeechProb
+        )
     }
 }
