@@ -50,11 +50,58 @@ actor WhisperKitEngine: TranscriptionEngine {
 
         let startTime = Date()
 
+        let primary = try await transcribeOnce(
+            pipe: pipe,
+            audioSamples: audioSamples,
+            options: makeDecodingOptions(language: language),
+            attempt: "primary",
+            startTime: startTime
+        )
+
+        guard TranscriptionRetryPolicy.shouldRetryEmptyResult(
+            audioSampleCount: audioSamples.count,
+            sampleRate: Constants.Audio.sampleRate,
+            diagnostics: primary.diagnostics
+        ) else {
+            return primary
+        }
+
+        NSLog("[WhisperKitEngine] Empty primary transcription; retrying with noSpeechThreshold disabled")
+
+        let retry = try await transcribeOnce(
+            pipe: pipe,
+            audioSamples: audioSamples,
+            options: makeDecodingOptions(language: language, noSpeechThreshold: nil),
+            attempt: "retryNoSpeechDisabled",
+            startTime: startTime
+        )
+
+        if retry.text.isEmpty {
+            NSLog("[WhisperKitEngine] Empty transcription retry also returned empty text")
+        }
+
+        return retry
+    }
+
+    private func makeDecodingOptions(
+        language: String?,
+        noSpeechThreshold: Float? = 0.6
+    ) -> DecodingOptions {
         var options = DecodingOptions()
+        options.noSpeechThreshold = noSpeechThreshold
         if let language, language != "auto" {
             options.language = language
         }
+        return options
+    }
 
+    private func transcribeOnce(
+        pipe: WhisperKit,
+        audioSamples: [Float],
+        options: DecodingOptions,
+        attempt: String,
+        startTime: Date
+    ) async throws -> TranscriptionResult {
         let results = try await pipe.transcribe(
             audioArray: audioSamples,
             decodeOptions: options
@@ -95,6 +142,7 @@ actor WhisperKitEngine: TranscriptionEngine {
             segments: segments,
             duration: duration,
             diagnostics: TranscriptionDiagnostics(
+                attempt: attempt,
                 rawText: rawText,
                 cleanText: cleanText,
                 segments: segments
