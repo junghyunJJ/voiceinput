@@ -70,7 +70,11 @@ actor WhisperKitEngine: TranscriptionEngine {
             TranscriptionResult.Segment(
                 text: segment.text,
                 start: TimeInterval(segment.start),
-                end: TimeInterval(segment.end)
+                end: TimeInterval(segment.end),
+                temperature: segment.temperature,
+                avgLogprob: segment.avgLogprob,
+                compressionRatio: segment.compressionRatio,
+                noSpeechProb: segment.noSpeechProb
             )
         }
 
