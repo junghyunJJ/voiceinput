@@ -66,15 +66,24 @@ actor WhisperKitEngine: TranscriptionEngine {
             return primary
         }
 
-        NSLog("[WhisperKitEngine] Empty primary transcription; retrying with noSpeechThreshold disabled")
+        let audioDuration = Double(audioSamples.count) / Constants.Audio.sampleRate
+        let requestedLanguage = language ?? "auto"
+        NSLog("[WhisperKitEngine] Empty primary transcription diagnostics: \(primary.diagnostics.logSummary(model: "loaded", requestedLanguage: requestedLanguage, audioDuration: audioDuration))")
+        NSLog("[WhisperKitEngine] Retrying empty primary transcription with noSpeechThreshold disabled")
 
-        let retry = try await transcribeOnce(
-            pipe: pipe,
-            audioSamples: audioSamples,
-            options: makeDecodingOptions(language: language, noSpeechThreshold: nil),
-            attempt: "retryNoSpeechDisabled",
-            startTime: startTime
-        )
+        let retry: TranscriptionResult
+        do {
+            retry = try await transcribeOnce(
+                pipe: pipe,
+                audioSamples: audioSamples,
+                options: makeDecodingOptions(language: language, noSpeechThreshold: nil),
+                attempt: "retryNoSpeechDisabled",
+                startTime: startTime
+            )
+        } catch {
+            NSLog("[WhisperKitEngine] Empty transcription retry failed: \(error)")
+            throw error
+        }
 
         if retry.text.isEmpty {
             NSLog("[WhisperKitEngine] Empty transcription retry also returned empty text")

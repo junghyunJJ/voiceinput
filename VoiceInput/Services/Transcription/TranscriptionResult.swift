@@ -108,21 +108,20 @@ struct TranscriptionDiagnostics: Sendable {
     }
 
     private static func segmentStats(_ segment: TranscriptionResult.Segment) -> String {
-        guard
-            let temperature = segment.temperature,
-            let avgLogprob = segment.avgLogprob,
-            let compressionRatio = segment.compressionRatio,
-            let noSpeechProb = segment.noSpeechProb
-        else {
+        return String(
+            format: "temp=%@ avgLogprob=%@ compression=%@ noSpeech=%@",
+            Self.format(segment.temperature),
+            Self.format(segment.avgLogprob),
+            Self.format(segment.compressionRatio),
+            Self.format(segment.noSpeechProb)
+        )
+    }
+
+    private static func format(_ value: Float?) -> String {
+        guard let value else {
             return "unavailable"
         }
 
-        return String(
-            format: "temp=%.2f avgLogprob=%.2f compression=%.2f noSpeech=%.2f",
-            temperature,
-            avgLogprob,
-            compressionRatio,
-            noSpeechProb
-        )
+        return String(format: "%.2f", value)
     }
 }

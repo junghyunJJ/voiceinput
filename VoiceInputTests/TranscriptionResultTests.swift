@@ -60,7 +60,7 @@ struct TranscriptionResultTests {
             audioDuration: 18.6
         )
 
-        #expect(summary == "attempt=primary, model=large-v3-v20240930_turbo_632MB, requestedLanguage=ko, audioDuration=18.6s, rawText='[BLANK_AUDIO]', cleanText='', segmentCount=2, segmentStats='unavailable | unavailable', segmentPreview='[BLANK_AUDIO] | kept\\nline'")
+        #expect(summary == "attempt=primary, model=large-v3-v20240930_turbo_632MB, requestedLanguage=ko, audioDuration=18.6s, rawText='[BLANK_AUDIO]', cleanText='', segmentCount=2, segmentStats='temp=unavailable avgLogprob=unavailable compression=unavailable noSpeech=unavailable | temp=unavailable avgLogprob=unavailable compression=unavailable noSpeech=unavailable', segmentPreview='[BLANK_AUDIO] | kept\\nline'")
     }
 
     @Test func diagnosticSummaryIncludesSegmentConfidenceStats() {
@@ -92,5 +92,33 @@ struct TranscriptionResultTests {
         #expect(summary.contains("attempt=primary"))
         #expect(summary.contains("segmentCount=1"))
         #expect(summary.contains("segmentStats='temp=0.00 avgLogprob=-1.23 compression=1.00 noSpeech=0.91'"))
+    }
+
+    @Test func diagnosticSummaryPreservesPartialSegmentConfidenceStats() {
+        let segments = [
+            TranscriptionResult.Segment(
+                text: "<|startoftranscript|><|ko|><|transcribe|><|0.00|><|endoftext|>",
+                start: 0.0,
+                end: 3.5,
+                temperature: 0.0,
+                compressionRatio: 1.0,
+                noSpeechProb: 0.91
+            ),
+        ]
+
+        let diagnostics = TranscriptionDiagnostics(
+            attempt: "primary",
+            rawText: "",
+            cleanText: "",
+            segments: segments
+        )
+
+        let summary = diagnostics.logSummary(
+            model: "large-v3-v20240930_turbo_632MB",
+            requestedLanguage: "ko",
+            audioDuration: 3.5
+        )
+
+        #expect(summary.contains("segmentStats='temp=0.00 avgLogprob=unavailable compression=1.00 noSpeech=0.91'"))
     }
 }

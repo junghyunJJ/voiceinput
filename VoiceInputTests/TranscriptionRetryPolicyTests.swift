@@ -59,4 +59,34 @@ struct TranscriptionRetryPolicyTests {
             diagnostics: diagnostics
         ))
     }
+
+    @Test func doesNotRetryEmptyTextWithoutSegments() {
+        let diagnostics = TranscriptionDiagnostics(
+            rawText: "",
+            cleanText: "",
+            segments: []
+        )
+
+        #expect(!TranscriptionRetryPolicy.shouldRetryEmptyResult(
+            audioSampleCount: 43_200,
+            sampleRate: 16_000,
+            diagnostics: diagnostics
+        ))
+    }
+
+    @Test func retriesAtMinimumAudioDurationBoundary() {
+        let diagnostics = TranscriptionDiagnostics(
+            rawText: "",
+            cleanText: "",
+            segments: [
+                TranscriptionResult.Segment(text: "", start: 0, end: 1),
+            ]
+        )
+
+        #expect(TranscriptionRetryPolicy.shouldRetryEmptyResult(
+            audioSampleCount: 16_000,
+            sampleRate: 16_000,
+            diagnostics: diagnostics
+        ))
+    }
 }
