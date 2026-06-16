@@ -105,6 +105,20 @@ actor WhisperKitEngine: TranscriptionEngine {
     }
 }
 
+enum TranscriptionRetryPolicy {
+    static let minimumRetryAudioDuration: TimeInterval = 1.0
+
+    static func shouldRetryEmptyResult(
+        audioSampleCount: Int,
+        sampleRate: Double,
+        diagnostics: TranscriptionDiagnostics
+    ) -> Bool {
+        let audioDuration = Double(audioSampleCount) / sampleRate
+        return audioDuration >= minimumRetryAudioDuration
+            && diagnostics.hasEmptyTextWithSegments
+    }
+}
+
 enum TranscriptionError: LocalizedError {
     case modelNotLoaded
     case noResult
