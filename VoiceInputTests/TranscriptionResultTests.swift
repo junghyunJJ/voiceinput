@@ -41,4 +41,25 @@ struct TranscriptionResultTests {
         #expect(result.text.isEmpty)
         #expect(result.segments.isEmpty)
     }
+
+    @Test func diagnosticSummaryIncludesRawCleanAndSegmentDetails() {
+        let segments = [
+            TranscriptionResult.Segment(text: "[BLANK_AUDIO]", start: 0.0, end: 18.6),
+            TranscriptionResult.Segment(text: "kept\nline", start: 18.6, end: 19.0),
+        ]
+
+        let diagnostics = TranscriptionDiagnostics(
+            rawText: "[BLANK_AUDIO]",
+            cleanText: "",
+            segments: segments
+        )
+
+        let summary = diagnostics.logSummary(
+            model: "large-v3-v20240930_turbo_632MB",
+            requestedLanguage: "ko",
+            audioDuration: 18.6
+        )
+
+        #expect(summary == "model=large-v3-v20240930_turbo_632MB, requestedLanguage=ko, audioDuration=18.6s, rawText='[BLANK_AUDIO]', cleanText='', segmentCount=2, segmentPreview='[BLANK_AUDIO] | kept\\nline'")
+    }
 }

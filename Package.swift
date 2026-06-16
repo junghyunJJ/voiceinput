@@ -14,11 +14,10 @@ let package = Package(
             path: "VoiceInput",
             exclude: ["Resources/Info.plist", "Resources/VoiceInput.entitlements"]
         ),
-        // Tests require Xcode (XCTest/Testing module not in Command Line Tools)
-        // .testTarget(
-        //     name: "VoiceInputTests",
-        //     dependencies: ["VoiceInput"],
-        //     path: "VoiceInputTests"
-        // ),
+        .testTarget(
+            name: "VoiceInputTests",
+            dependencies: ["VoiceInput"],
+            path: "VoiceInputTests"
+        ),
     ]
 )

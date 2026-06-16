@@ -218,6 +218,9 @@ final class AppViewModel {
             let transcribedLang = result.language
             let transcribedDuration = result.duration
             log("[VoiceInput] Transcription result: '\(transcribedText)' (lang: \(transcribedLang), \(String(format: "%.2f", transcribedDuration))s)")
+            let requestedLanguage = language ?? "auto"
+            let audioDuration = Double(audioSamples.count) / Constants.Audio.sampleRate
+            log("[VoiceInput] Transcription diagnostics: \(result.diagnostics.logSummary(model: settings.selectedModel, requestedLanguage: requestedLanguage, audioDuration: audioDuration))")
 
             guard !transcribedText.isEmpty else {
                 log("[VoiceInput] Empty transcription, returning to idle")

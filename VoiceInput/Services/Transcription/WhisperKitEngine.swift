@@ -75,7 +75,8 @@ actor WhisperKitEngine: TranscriptionEngine {
         }
 
         // Filter out WhisperKit hallucination/meta tokens
-        var cleanText = result.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let rawText = result.text
+        var cleanText = rawText.trimmingCharacters(in: .whitespacesAndNewlines)
         // Remove bracketed/parenthesized meta tokens like [BLANK_AUDIO], [끝], [Sigh], [inaudible], *Sing*, (끝)
         cleanText = cleanText.replacingOccurrences(
             of: #"\[[^\]]*\]|\([^\)]*\)|\*[^\*]+\*"#,
@@ -88,7 +89,12 @@ actor WhisperKitEngine: TranscriptionEngine {
             text: cleanText,
             language: result.language,
             segments: segments,
-            duration: duration
+            duration: duration,
+            diagnostics: TranscriptionDiagnostics(
+                rawText: rawText,
+                cleanText: cleanText,
+                segments: segments
+            )
         )
     }
 
