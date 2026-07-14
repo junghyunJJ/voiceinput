@@ -65,7 +65,6 @@ struct TranscriptionDiagnostics: Sendable {
     let segmentCount: Int
     let segmentStats: String
     let segmentPreview: String
-    var hasEmptyTextWithSegments: Bool { rawText.isEmpty && cleanText.isEmpty && segmentCount > 0 }
 
     init(
         attempt: String = "primary",

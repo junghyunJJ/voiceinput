@@ -48,56 +48,22 @@ actor WhisperKitEngine: TranscriptionEngine {
             throw TranscriptionError.modelNotLoaded
         }
 
-        let startTime = Date()
-
-        let primary = try await transcribeOnce(
+        return try await transcribeOnce(
             pipe: pipe,
             audioSamples: audioSamples,
-            options: makeDecodingOptions(language: language),
-            attempt: "primary",
-            startTime: startTime
+            options: Self.makeDecodingOptions(language: language),
+            attempt: "primaryTextOnly",
+            startTime: Date()
         )
-
-        guard TranscriptionRetryPolicy.shouldRetryEmptyResult(
-            audioSampleCount: audioSamples.count,
-            sampleRate: Constants.Audio.sampleRate,
-            diagnostics: primary.diagnostics
-        ) else {
-            return primary
-        }
-
-        let audioDuration = Double(audioSamples.count) / Constants.Audio.sampleRate
-        let requestedLanguage = language ?? "auto"
-        NSLog("[WhisperKitEngine] Empty primary transcription diagnostics: \(primary.diagnostics.logSummary(model: "loaded", requestedLanguage: requestedLanguage, audioDuration: audioDuration))")
-        NSLog("[WhisperKitEngine] Retrying empty primary transcription with noSpeechThreshold disabled")
-
-        let retry: TranscriptionResult
-        do {
-            retry = try await transcribeOnce(
-                pipe: pipe,
-                audioSamples: audioSamples,
-                options: makeDecodingOptions(language: language, noSpeechThreshold: nil),
-                attempt: "retryNoSpeechDisabled",
-                startTime: startTime
-            )
-        } catch {
-            NSLog("[WhisperKitEngine] Empty transcription retry failed: \(error)")
-            throw error
-        }
-
-        if retry.text.isEmpty {
-            NSLog("[WhisperKitEngine] Empty transcription retry also returned empty text")
-        }
-
-        return retry
     }
 
-    private func makeDecodingOptions(
-        language: String?,
-        noSpeechThreshold: Float? = 0.6
+    nonisolated static func makeDecodingOptions(
+        language: String?
     ) -> DecodingOptions {
         var options = DecodingOptions()
-        options.noSpeechThreshold = noSpeechThreshold
+        options.withoutTimestamps = true
+        options.suppressBlank = true
+        options.usePrefillCache = false
         if let language, language != "auto" {
             options.language = language
         }
@@ -163,20 +129,6 @@ actor WhisperKitEngine: TranscriptionEngine {
         // Use transcribe with no language hint — WhisperKit auto-detects
         let result = try await transcribe(audioSamples: audioSamples, language: nil)
         return result.language
-    }
-}
-
-enum TranscriptionRetryPolicy {
-    static let minimumRetryAudioDuration: TimeInterval = 1.0
-
-    static func shouldRetryEmptyResult(
-        audioSampleCount: Int,
-        sampleRate: Double,
-        diagnostics: TranscriptionDiagnostics
-    ) -> Bool {
-        let audioDuration = Double(audioSampleCount) / sampleRate
-        return audioDuration >= minimumRetryAudioDuration
-            && diagnostics.hasEmptyTextWithSegments
     }
 }
 

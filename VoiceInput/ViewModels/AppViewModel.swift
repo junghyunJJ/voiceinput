@@ -201,6 +201,16 @@ final class AppViewModel {
         }
         consecutiveNoAudioFailures = 0
 
+        let signalMetrics = AudioDiagnostics.analyze(samples: audioSamples)
+        log("[VoiceInput] Audio signal: \(signalMetrics.logSummary)")
+
+        guard signalMetrics.containsSpeech else {
+            log("[VoiceInput] Audio rejected before transcription: insufficient speech")
+            finishRecordingCycle()
+            setError("No speech was detected. Please try again.")
+            return
+        }
+
         // Transcribe
         recordingState = .transcribing
         log("[VoiceInput] Starting transcription...")
@@ -223,8 +233,18 @@ final class AppViewModel {
             log("[VoiceInput] Transcription diagnostics: \(result.diagnostics.logSummary(model: settings.selectedModel, requestedLanguage: requestedLanguage, audioDuration: audioDuration))")
 
             guard !transcribedText.isEmpty else {
-                log("[VoiceInput] Empty transcription, returning to idle")
+                do {
+                    if let fixtureURL = try AudioDiagnostics.writeEmptyFixtureIfRequested(
+                        samples: audioSamples
+                    ) {
+                        log("[VoiceInput] Saved empty-transcription fixture: \(fixtureURL.path)")
+                    }
+                } catch {
+                    log("[VoiceInput] Failed to save empty-transcription fixture: \(error)")
+                }
+                log("[VoiceInput] Speech was detected, but transcription returned no text")
                 finishRecordingCycle()
+                setError("Speech was detected, but no text was produced. Please try again.")
                 return
             }
 
