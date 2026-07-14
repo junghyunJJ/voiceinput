@@ -9,7 +9,6 @@ struct WhisperKitDecodingOptionsTests {
         #expect(options.language == "ko")
         #expect(options.withoutTimestamps)
         #expect(options.suppressBlank)
-        #expect(options.usePrefillCache == false)
         #expect(options.noSpeechThreshold == 0.6)
     }
 

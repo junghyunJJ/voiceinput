@@ -63,7 +63,6 @@ actor WhisperKitEngine: TranscriptionEngine {
         var options = DecodingOptions()
         options.withoutTimestamps = true
         options.suppressBlank = true
-        options.usePrefillCache = false
         if let language, language != "auto" {
             options.language = language
         }
