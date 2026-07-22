@@ -19,7 +19,21 @@ enum WhisperKitModelStorage {
     ) -> URL? {
         let contents = (try? fileManager.contentsOfDirectory(atPath: modelsDirectory.path)) ?? []
         guard let folder = findModelFolder(for: variant, in: contents) else { return nil }
-        return modelsDirectory.appendingPathComponent(folder, isDirectory: true)
+        let modelURL = modelsDirectory.appendingPathComponent(folder, isDirectory: true)
+        let requiredModels = ["MelSpectrogram", "AudioEncoder", "TextDecoder"]
+        guard requiredModels.allSatisfy({ modelName in
+            let compiled = modelURL.appendingPathComponent("\(modelName).mlmodelc")
+            let compiledPayloads = ["coremldata.bin", "model.mil", "weights/weight.bin"]
+            let compiledModelExists = compiledPayloads.allSatisfy { payload in
+                fileManager.fileExists(atPath: compiled.appendingPathComponent(payload).path)
+            }
+            let package = modelURL.appendingPathComponent(
+                "\(modelName).mlpackage/Data/com.apple.CoreML/model.mlmodel"
+            )
+            return compiledModelExists ||
+                fileManager.fileExists(atPath: package.path)
+        }) else { return nil }
+        return modelURL
     }
 
     static func findModelFolder(for variant: String, in contents: [String]) -> String? {
@@ -89,10 +103,13 @@ final class ModelManager {
     func refreshAvailableModels() {
         let fm = FileManager.default
         let modelsDir = WhisperKitModelStorage.modelsDirectory
-        let contents = (try? fm.contentsOfDirectory(atPath: modelsDir.path)) ?? []
 
         availableModels = Self.modelCatalog.map { model in
-            let downloaded = WhisperKitModelStorage.findModelFolder(for: model.variant, in: contents) != nil
+            let downloaded = WhisperKitModelStorage.localModelURL(
+                for: model.variant,
+                in: modelsDir,
+                fileManager: fm
+            ) != nil
             return ModelInfo(
                 variant: model.variant,
                 displayName: model.display,

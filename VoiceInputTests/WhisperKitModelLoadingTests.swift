@@ -16,6 +16,17 @@ struct WhisperKitModelLoadingTests {
         let expectedURL = modelsDirectory
             .appendingPathComponent("openai_whisper-\(variant)", isDirectory: true)
         try fileManager.createDirectory(at: expectedURL, withIntermediateDirectories: true)
+        for modelName in ["MelSpectrogram", "AudioEncoder", "TextDecoder"] {
+            let bundleURL = expectedURL
+                .appendingPathComponent("\(modelName).mlmodelc", isDirectory: true)
+            try fileManager.createDirectory(
+                at: bundleURL.appendingPathComponent("weights", isDirectory: true),
+                withIntermediateDirectories: true
+            )
+            for payload in ["coremldata.bin", "model.mil", "weights/weight.bin"] {
+                try Data([0]).write(to: bundleURL.appendingPathComponent(payload))
+            }
+        }
         defer { try? fileManager.removeItem(at: modelsDirectory) }
 
         let result = WhisperKitModelStorage.localModelURL(
@@ -25,6 +36,30 @@ struct WhisperKitModelLoadingTests {
         )
 
         #expect(result == expectedURL)
+    }
+
+    @Test func ignoresIncompleteModelFolder() throws {
+        let fileManager = FileManager.default
+        let modelsDirectory = fileManager.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        let variant = Constants.Transcription.largeV3TurboModelVariant
+        let incompleteURL = modelsDirectory
+            .appendingPathComponent("openai_whisper-\(variant)", isDirectory: true)
+        for modelName in ["MelSpectrogram", "AudioEncoder", "TextDecoder"] {
+            try fileManager.createDirectory(
+                at: incompleteURL.appendingPathComponent("\(modelName).mlmodelc", isDirectory: true),
+                withIntermediateDirectories: true
+            )
+        }
+        defer { try? fileManager.removeItem(at: modelsDirectory) }
+
+        let result = WhisperKitModelStorage.localModelURL(
+            for: variant,
+            in: modelsDirectory,
+            fileManager: fileManager
+        )
+
+        #expect(result == nil)
     }
 
     @Test func localModelSkipsDownload() async throws {
