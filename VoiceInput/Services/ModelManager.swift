@@ -1,6 +1,36 @@
 import Foundation
 import WhisperKit
 
+enum WhisperKitModelStorage {
+    static var modelsDirectory: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+            .appendingPathComponent("huggingface/models")
+            .appendingPathComponent(Constants.Transcription.modelRepository)
+    }
+
+    static func localModelURL(for variant: String) -> URL? {
+        localModelURL(for: variant, in: modelsDirectory)
+    }
+
+    static func localModelURL(
+        for variant: String,
+        in modelsDirectory: URL,
+        fileManager: FileManager = .default
+    ) -> URL? {
+        let contents = (try? fileManager.contentsOfDirectory(atPath: modelsDirectory.path)) ?? []
+        guard let folder = findModelFolder(for: variant, in: contents) else { return nil }
+        return modelsDirectory.appendingPathComponent(folder, isDirectory: true)
+    }
+
+    static func findModelFolder(for variant: String, in contents: [String]) -> String? {
+        contents.first { folder in
+            folder.hasSuffix("-\(variant)") ||
+            folder.hasSuffix("_\(variant)") ||
+            folder.hasSuffix("-\(variant.replacingOccurrences(of: "-", with: "_"))")
+        }
+    }
+}
+
 /// Manages WhisperKit model downloads, caching, and selection.
 @MainActor
 @Observable
@@ -56,29 +86,13 @@ final class ModelManager {
         }
     }
 
-    /// HuggingFace default download directory (where WhisperKit actually stores models).
-    private static var huggingFaceModelsDir: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            .appendingPathComponent("huggingface/models")
-            .appendingPathComponent(Constants.Transcription.modelRepository)
-    }
-
-    /// Find the actual folder name for a variant (e.g., "medium" → "openai_whisper-medium").
-    private static func findModelFolder(for variant: String, in contents: [String]) -> String? {
-        contents.first { folder in
-            folder.hasSuffix("-\(variant)") ||
-            folder.hasSuffix("_\(variant)") ||
-            folder.hasSuffix("-\(variant.replacingOccurrences(of: "-", with: "_"))")
-        }
-    }
-
     func refreshAvailableModels() {
         let fm = FileManager.default
-        let modelsDir = Self.huggingFaceModelsDir
+        let modelsDir = WhisperKitModelStorage.modelsDirectory
         let contents = (try? fm.contentsOfDirectory(atPath: modelsDir.path)) ?? []
 
         availableModels = Self.modelCatalog.map { model in
-            let downloaded = Self.findModelFolder(for: model.variant, in: contents) != nil
+            let downloaded = WhisperKitModelStorage.findModelFolder(for: model.variant, in: contents) != nil
             return ModelInfo(
                 variant: model.variant,
                 displayName: model.display,
@@ -112,9 +126,9 @@ final class ModelManager {
 
     func deleteModel(variant: String) throws {
         let fm = FileManager.default
-        let modelsDir = Self.huggingFaceModelsDir
+        let modelsDir = WhisperKitModelStorage.modelsDirectory
         let contents = (try? fm.contentsOfDirectory(atPath: modelsDir.path)) ?? []
-        if let folder = Self.findModelFolder(for: variant, in: contents) {
+        if let folder = WhisperKitModelStorage.findModelFolder(for: variant, in: contents) {
             let folderPath = modelsDir.appendingPathComponent(folder)
             try fm.removeItem(at: folderPath)
         }

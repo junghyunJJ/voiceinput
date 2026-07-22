@@ -10,23 +10,36 @@ actor WhisperKitEngine: TranscriptionEngine {
         whisperKit != nil
     }
 
-    func loadModel(variant: String) async throws {
-        // Download model if needed
-        let modelURL = try await WhisperKit.download(
-            variant: variant,
-            from: Constants.Transcription.modelRepository,
-            progressCallback: { progress in
-                Task { @MainActor in
-                    NotificationCenter.default.post(
-                        name: .modelDownloadProgress,
-                        object: nil,
-                        userInfo: ["progress": progress.fractionCompleted]
-                    )
-                }
-            }
-        )
+    nonisolated static func resolveModelURL(
+        localModelURL: URL?,
+        download: () async throws -> URL
+    ) async rethrows -> URL {
+        if let localModelURL {
+            return localModelURL
+        }
+        return try await download()
+    }
 
-        // Initialize WhisperKit with the downloaded model
+    func loadModel(variant: String) async throws {
+        let modelURL = try await Self.resolveModelURL(
+            localModelURL: WhisperKitModelStorage.localModelURL(for: variant)
+        ) {
+            try await WhisperKit.download(
+                variant: variant,
+                from: Constants.Transcription.modelRepository,
+                progressCallback: { progress in
+                    Task { @MainActor in
+                        NotificationCenter.default.post(
+                            name: .modelDownloadProgress,
+                            object: nil,
+                            userInfo: ["progress": progress.fractionCompleted]
+                        )
+                    }
+                }
+            )
+        }
+
+        // Initialize WhisperKit with the resolved model
         let config = WhisperKitConfig(
             modelFolder: modelURL.path,
             load: true,
