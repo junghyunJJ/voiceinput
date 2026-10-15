@@ -26,9 +26,20 @@ struct AudioDiagnosticsTests {
         #expect(metrics.containsSpeech)
     }
 
-    @Test func rejectsSignalBelowTheEnergyThreshold() {
+    @Test func acceptsQuietAudioAtObservedMicrophoneLevels() {
+        let samples = (0..<4_800).map { index in
+            Float(0.004 * sin(2 * Double.pi * 200 * Double(index) / 16_000))
+        }
+        let metrics = AudioDiagnostics.analyze(samples: samples)
+
+        #expect(metrics.rms > 0.002)
+        #expect(metrics.rms < 0.003)
+        #expect(metrics.containsSpeech)
+    }
+
+    @Test func rejectsFaintBackgroundSignal() {
         let metrics = AudioDiagnostics.analyze(
-            samples: Array(repeating: 0.019, count: 4_800)
+            samples: Array(repeating: 0.0005, count: 4_800)
         )
 
         #expect(metrics.activeFrameCount == 0)

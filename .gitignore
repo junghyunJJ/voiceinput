@@ -30,3 +30,5 @@ build/
 *.log
 
 AGENTS.md
+
+/docs/

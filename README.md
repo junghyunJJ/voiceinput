@@ -95,6 +95,8 @@ Both permissions are requested on first launch and can be managed in System Sett
 
 With **Auto-insert text at cursor** enabled, transcription uses a normal Cmd+V paste so browser editors receive input events. VoiceInput restores the previous clipboard after the paste, unless you copied something new in the meantime. If Accessibility access is unavailable, the transcription stays on the clipboard for manual paste.
 
+Models and tokenizers are stored in `~/Library/Application Support/Voice Input/Models/`, so model loading does not require access to your Documents folder. Caches from older versions in `~/Documents/huggingface/` are left intact; copy their `models` folder into the new location to reuse downloads, or download the model again in Settings.
+
 ## Project Structure
 
 ```

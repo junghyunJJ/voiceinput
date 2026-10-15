@@ -32,7 +32,8 @@ struct AudioSignalMetrics: Equatable, Sendable {
 enum AudioDiagnostics {
     static let fixtureEnvironmentVariable = "VOICEINPUT_EMPTY_TRANSCRIPTION_FIXTURE"
     static let frameLengthSamples = 1_600
-    static let energyThreshold: Float = 0.02
+    // ponytail: fixed noise floor; use adaptive VAD if microphone noise exceeds it.
+    static let energyThreshold: Float = 0.002
     static let minimumSpeechFrameCount = 1
 
     static func analyze(samples: [Float]) -> AudioSignalMetrics {

@@ -26,6 +26,7 @@ actor WhisperKitEngine: TranscriptionEngine {
         ) {
             try await WhisperKit.download(
                 variant: variant,
+                downloadBase: Constants.Storage.modelDirectoryURL,
                 from: Constants.Transcription.modelRepository,
                 progressCallback: { progress in
                     Task { @MainActor in
@@ -41,6 +42,7 @@ actor WhisperKitEngine: TranscriptionEngine {
 
         // Initialize WhisperKit with the resolved model
         let config = WhisperKitConfig(
+            downloadBase: Constants.Storage.modelDirectoryURL,
             modelFolder: modelURL.path,
             load: true,
             download: false

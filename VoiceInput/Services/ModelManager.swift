@@ -3,8 +3,8 @@ import WhisperKit
 
 enum WhisperKitModelStorage {
     static var modelsDirectory: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-            .appendingPathComponent("huggingface/models")
+        Constants.Storage.modelDirectoryURL
+            .appendingPathComponent("models")
             .appendingPathComponent(Constants.Transcription.modelRepository)
     }
 
@@ -132,6 +132,7 @@ final class ModelManager {
 
         _ = try await WhisperKit.download(
             variant: variant,
+            downloadBase: Constants.Storage.modelDirectoryURL,
             from: Constants.Transcription.modelRepository,
             progressCallback: { [weak self] progress in
                 Task { @MainActor in

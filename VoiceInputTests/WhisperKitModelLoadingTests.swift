@@ -8,6 +8,19 @@ struct WhisperKitModelLoadingTests {
         case downloadCalled
     }
 
+    @Test func modelCacheDoesNotRequireDocumentsPermission() throws {
+        let applicationSupport = try FileManager.default.url(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: false
+        )
+
+        #expect(WhisperKitModelStorage.modelsDirectory.path.hasPrefix(
+            applicationSupport.path + "/"
+        ))
+    }
+
     @Test func findsDownloadedTurboModelFolder() throws {
         let fileManager = FileManager.default
         let modelsDirectory = fileManager.temporaryDirectory
