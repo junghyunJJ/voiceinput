@@ -14,14 +14,23 @@ private func log(_ message: String) {
     }
 }
 
-/// Orchestrates 3-tier text insertion fallback:
-/// Tier 1: Accessibility API (AXUIElement) — most reliable for native apps
-/// Tier 2: CGEvent keyboard simulation — for short, any-language text
-/// Tier 3: Clipboard paste (Cmd+V) — universal fallback
+/// Pastes text first so browser editors receive normal paste/input events.
+/// Falls back to Accessibility API and short-text keyboard simulation.
+@MainActor
 struct TextInsertionManager {
-    private let accessibilityInserter = AccessibilityInserter()
-    private let keyboardSimulator = KeyboardSimulator()
-    private let clipboardInserter = ClipboardInserter()
+    private let insertViaAccessibility: (String) -> Bool
+    private let insertViaKeyboard: (String) -> Bool
+    private let insertViaClipboard: (String) async -> Bool
+
+    init(
+        insertViaAccessibility: @escaping (String) -> Bool = AccessibilityInserter().insert,
+        insertViaKeyboard: @escaping (String) -> Bool = KeyboardSimulator().insert,
+        insertViaClipboard: @escaping (String) async -> Bool = { await ClipboardInserter().insert($0) }
+    ) {
+        self.insertViaAccessibility = insertViaAccessibility
+        self.insertViaKeyboard = insertViaKeyboard
+        self.insertViaClipboard = insertViaClipboard
+    }
 
     enum InsertionMethod: String {
         case accessibility
@@ -35,43 +44,45 @@ struct TextInsertionManager {
     }
 
     /// Insert text at the current cursor position using the best available method.
-    func insert(_ text: String, accessibilityAvailable: Bool = false) -> InsertionResult {
+    func insert(_ text: String, accessibilityAvailable: Bool = false) async -> InsertionResult {
         guard !text.isEmpty else {
             return InsertionResult(success: true, method: .accessibility)
         }
 
         log("insert() called: length=\(text.count), accessibilityAvailable=\(accessibilityAvailable)")
 
+        // AX setters can report success without updating a web editor's input state.
+        log("Attempting clipboard paste...")
+        if await insertViaClipboard(text) {
+            log("SUCCESS (clipboard paste command posted)")
+            return InsertionResult(success: true, method: .clipboard)
+        }
+        log("Clipboard paste unavailable, attempting fallbacks")
+
         if accessibilityAvailable {
-            // Tier 1: Try Accessibility API
-            log("Tier 1: attempting AccessibilityInserter...")
-            if accessibilityInserter.insert(text) {
-                log("Tier 1: SUCCESS (accessibility)")
+            log("Attempting AccessibilityInserter...")
+            if insertViaAccessibility(text) {
+                log("SUCCESS (accessibility)")
                 return InsertionResult(success: true, method: .accessibility)
             }
-            log("Tier 1: FAILED, falling through to Tier 2")
+            log("Accessibility insertion failed")
 
-            // Tier 2: Try CGEvent keyboard simulation (short text, any language)
             let isShort = text.count <= Constants.Transcription.maxCharactersForKeyboardSimulation
 
             if isShort {
-                log("Tier 2: attempting KeyboardSimulator (length=\(text.count))...")
-                if keyboardSimulator.insert(text) {
-                    log("Tier 2: SUCCESS (keyboard)")
+                log("Attempting KeyboardSimulator (length=\(text.count))...")
+                if insertViaKeyboard(text) {
+                    log("SUCCESS (keyboard)")
                     return InsertionResult(success: true, method: .keyboard)
                 }
-                log("Tier 2: FAILED, falling through to Tier 3")
+                log("Keyboard insertion failed")
             } else {
-                log("Tier 2: SKIPPED (text too long: \(text.count) > \(Constants.Transcription.maxCharactersForKeyboardSimulation))")
+                log("Keyboard insertion skipped (text too long: \(text.count))")
             }
         } else {
-            log("Tier 1+2: SKIPPED (accessibility not available)")
+            log("Fallbacks skipped (accessibility not available)")
         }
 
-        // Tier 3: Clipboard paste with AppleScript Cmd+V (works without Accessibility)
-        log("Tier 3: attempting ClipboardInserter...")
-        let pasteSuccess = clipboardInserter.insert(text)
-        log("Tier 3: \(pasteSuccess ? "SUCCESS" : "FAILED") (clipboard)")
-        return InsertionResult(success: pasteSuccess, method: .clipboard)
+        return InsertionResult(success: false, method: .clipboard)
     }
 }

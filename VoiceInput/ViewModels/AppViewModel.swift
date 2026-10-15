@@ -260,7 +260,7 @@ final class AppViewModel {
                 log("[VoiceInput] Inserting text: '\(transcribedText.prefix(50))...'")
 
                 // Pass accessibility status so insertion can choose the right method
-                let insertResult = textInsertionManager.insert(transcribedText, accessibilityAvailable: permissions.accessibilityGranted)
+                let insertResult = await textInsertionManager.insert(transcribedText, accessibilityAvailable: permissions.accessibilityGranted)
                 log("[VoiceInput] Insert result: success=\(insertResult.success), method=\(insertResult.method.rawValue)")
 
                 if !insertResult.success {

@@ -8,7 +8,7 @@ A macOS menu bar app that converts speech to text using on-device AI. Powered by
 - **Multi-language support** — **7 selectable transcription languages**: English, Korean, Japanese, Chinese, Spanish, French, and German, plus auto-detect.
 - **Last transcription shortcut** — Use a configurable shortcut to copy and paste your most recent transcription again.
 - **Global hotkey** — Start/stop recording from any app without switching windows.
-- **Smart text insertion** — Automatically types transcribed text into the active app using Accessibility API, keyboard simulation, or clipboard fallback.
+- **Smart text insertion** — Automatically pastes transcribed text into the active app with Cmd+V, with Accessibility API and keyboard simulation as fallbacks.
 - **Multiple Whisper models** — Choose the model that fits your speed/accuracy needs.
 - **Menu bar app** — Lives in the menu bar, stays out of your way.
 - **Apple Silicon optimized** — Runs on Core ML with Apple Neural Engine acceleration.
@@ -92,6 +92,8 @@ VoiceInput requires two macOS permissions:
 - **Accessibility** — To type transcribed text into the active application.
 
 Both permissions are requested on first launch and can be managed in System Settings > Privacy & Security.
+
+With **Auto-insert text at cursor** enabled, transcription uses a normal Cmd+V paste so browser editors receive input events. VoiceInput restores the previous clipboard after the paste, unless you copied something new in the meantime. If Accessibility access is unavailable, the transcription stays on the clipboard for manual paste.
 
 ## Project Structure
 

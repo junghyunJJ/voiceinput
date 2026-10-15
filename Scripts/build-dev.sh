@@ -5,7 +5,6 @@
 set -e
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BINARY="$PROJECT_DIR/.build/arm64-apple-macosx/debug/VoiceInput"
 APP_DIR="$HOME/Applications/VoiceInput.app"
 PREFERRED_SIGNING_IDENTITY="VoiceInput Dev"
 if [ -z "${SIGNING_IDENTITY+x}" ]; then
@@ -23,7 +22,8 @@ pkill -f "VoiceInput.app/Contents/MacOS/VoiceInput" 2>/dev/null || true
 sleep 1
 
 echo "Building..."
-swift build 2>&1
+swift build --package-path "$PROJECT_DIR" 2>&1
+BINARY="$(swift build --package-path "$PROJECT_DIR" --show-bin-path)/VoiceInput"
 
 # Create .app bundle
 echo "Creating .app bundle..."
