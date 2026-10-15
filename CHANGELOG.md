@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-10-15
+
+### Fixed
+
+- Automatically paste completed dictation into native apps, browser editors, and terminal input using standard paste events.
+- Preserve the previous clipboard without overwriting content copied while a paste is completing, and retain dictation for manual paste if automatic paste is unavailable.
+- Install the freshly built SwiftPM executable instead of a stale binary, including when the development script is launched from another directory.
+- Improve empty-transcription handling and decoder diagnostics.
+- Load complete cached speech models without a network lookup, and reject incomplete model caches.
+
+### Changed
+
+- Upgrade WhisperKit to 1.0.0 and use the supported Large v3 Turbo model variant, including migration of legacy selections.
+
 ## [0.5.1] - 2026-05-22
 
 ### Changed
